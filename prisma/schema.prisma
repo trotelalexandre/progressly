@@ -12,3 +12,75 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// User Model
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  habits       Habit[]
+  transactions Transaction[]
+  investments  Investment[]
+  readings     Reading[]
+  Budget       Budget[]
+}
+
+// Habit Tracking
+model Habit {
+  id            String   @id @default(uuid())
+  userId        String
+  name          String
+  completedDays Int[]
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+// Budget and Transactions
+model Transaction {
+  id           String      @id @default(uuid())
+  userId       String
+  category     String
+  amount       Float
+  date         DateTime    @default(now())
+  type         String // "income" or "expense"
+  user         User        @relation(fields: [userId], references: [id])
+  Investment   Investment? @relation(fields: [investmentId], references: [id])
+  investmentId String?
+}
+
+model Budget {
+  id          String @id @default(uuid())
+  userId      String
+  month       Int
+  year        Int
+  income      Float
+  expenses    Float
+  investments Float
+  savings     Float
+  user        User   @relation(fields: [userId], references: [id])
+}
+
+// Investment Tracking
+model Investment {
+  id           String        @id @default(uuid())
+  userId       String
+  name         String
+  category     String
+  buyPrice     Float
+  quantity     Int
+  transactions Transaction[]
+  user         User          @relation(fields: [userId], references: [id])
+}
+
+// Reading Progress
+model Reading {
+  id          String  @id @default(uuid())
+  userId      String
+  title       String
+  totalPages  Int
+  currentPage Int
+  isCompleted Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id])
+}
