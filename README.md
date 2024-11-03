@@ -25,6 +25,7 @@ A multi-functional app for managing budgets, tracking investments, reading progr
 ### Budget Management
 
 Track income, expenses, and budgets for different categories with monthly summaries:
+
 - Set monthly budgets, track transactions, and view remaining amounts.
 - Visualize spending distribution by category (e.g., investments, savings, expenses).
 - Access detailed breakdowns of transactions by date and category.
@@ -32,6 +33,7 @@ Track income, expenses, and budgets for different categories with monthly summar
 ### Investment Tracking
 
 Monitor and track the performance of investments manually:
+
 - Add investments and specify buy prices, quantities, and categories.
 - View P&L data and track individual or total portfolio performance over time.
 - Use line charts to show portfolio growth.
@@ -39,11 +41,13 @@ Monitor and track the performance of investments manually:
 ### Reading Progress
 
 Organize your reading list and track progress on books:
+
 - Add new books, specify total pages, and log the current page.
 - View your progress as a percentage, with options to mark books as completed.
 
 ### Habit Tracking
 
 Create habits and track daily completions:
+
 - Add, edit, and delete habits with tracking logs to mark completed days.
 - Visualize your habit streaks and consistency through daily/weekly graphs.
