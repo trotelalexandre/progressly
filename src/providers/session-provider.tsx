@@ -6,14 +6,12 @@ import React from "react";
 
 interface ClientSessionProviderProps {
   children: React.ReactNode;
-  session: Session;
 }
 
 const ClientSessionProvider: React.FC<ClientSessionProviderProps> = ({
   children,
-  session,
 }) => {
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  return <SessionProvider>{children}</SessionProvider>;
 };
 
 export default ClientSessionProvider;
