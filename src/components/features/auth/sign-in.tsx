@@ -4,7 +4,9 @@ import { signIn } from "next-auth/react";
 
 export default function SignIn() {
   const handleSignIn = () => {
-    signIn("github");
+    signIn("github", {
+      callbackUrl: "/",
+    });
   };
 
   return (

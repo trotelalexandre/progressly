@@ -1,20 +1,9 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import ClientSessionProvider from "@/providers/session-provider";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -25,12 +14,15 @@ export const metadata: Metadata = {
   description: "A progress tracker for your goals",
 };
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
