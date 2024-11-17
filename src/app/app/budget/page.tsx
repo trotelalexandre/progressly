@@ -5,6 +5,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,7 +17,10 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import DatePickerBudget from "@/components/features/budget/date-picker-budget";
+import DatePickerBudget from "@/app/app/budget/date-picker-budget";
+import SpentChart from "./spent-chart";
+import { TrendingUp } from "lucide-react";
+import CategoriesChart from "./categories-chart";
 
 export default async function BudgetPage() {
   return (
@@ -105,60 +109,135 @@ export default async function BudgetPage() {
         </TabsContent>
 
         <TabsContent value="statistics">
-          <div className="grid grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Categories</CardTitle>
-                <CardDescription>Spending by category</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="text-left">Category</th>
-                      <th className="text-right">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Food</td>
-                      <td className="text-right">$500</td>
-                    </tr>
-                    <tr>
-                      <td>Entertainment</td>
-                      <td className="text-right">$300</td>
-                    </tr>
-                    <tr>
-                      <td>Transportation</td>
-                      <td className="text-right">$200</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Income vs Expense</CardTitle>
-                <CardDescription>Income and expense comparison</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm font-medium">Income</div>
-                    <div className="text-3xl font-bold">$2,000</div>
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Income vs Expense</CardTitle>
+                  <CardDescription>
+                    Income and expense comparison
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm font-medium">Income</div>
+                      <div className="text-3xl font-bold">$2,000</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">Expense</div>
+                      <div className="text-3xl font-bold">$1,500</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium">Expense</div>
-                    <div className="text-3xl font-bold">$1,500</div>
-                  </div>
-                </div>
-
-                <div className="mt-4">
+                </CardContent>
+                <CardFooter>
                   <Progress value={75} />
-                </div>
-              </CardContent>
-            </Card>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Monthly Budget</CardTitle>
+                  <CardDescription>Spending progress</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm font-medium">Spent</div>
+                      <div className="text-3xl font-bold">$1,500</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">Remaining</div>
+                      <div className="text-3xl font-bold">$500</div>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={75} />
+                </CardFooter>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Investment</CardTitle>
+                  <CardDescription>Investments progress</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">$1,000</div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={50} />
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Savings</CardTitle>
+                  <CardDescription>Savings progress</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">$500</div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={25} />
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Expenses</CardTitle>
+                  <CardDescription>Expenses progress</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">$1,500</div>
+                </CardContent>
+                <CardFooter>
+                  <Progress value={75} />
+                </CardFooter>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Spent</CardTitle>
+                  <CardDescription>Spending progress</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SpentChart />
+                </CardContent>
+                <CardFooter className="flex-col items-start gap-2 text-sm">
+                  <div className="flex gap-2 font-medium leading-none">
+                    Trending up by 5.2% this month{" "}
+                    <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="leading-none text-muted-foreground">
+                    Showing total visitors for the last 6 months
+                  </div>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Categories</CardTitle>
+                  <CardDescription>Spending by category</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CategoriesChart />
+                </CardContent>
+                <CardFooter className="flex-col gap-2 text-sm">
+                  <div className="flex items-center gap-2 font-medium leading-none">
+                    Trending up by 5.2% this month{" "}
+                    <TrendingUp className="h-4 w-4" />
+                  </div>
+                  <div className="leading-none text-muted-foreground">
+                    Showing total visitors for the last 6 months
+                  </div>
+                </CardFooter>
+              </Card>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

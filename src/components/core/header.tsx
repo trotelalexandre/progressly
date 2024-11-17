@@ -9,34 +9,48 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import SignOutButton from "../features/auth/sign-out-button";
+import SignOutButton from "../auth/sign-out-button";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { DarkModeToggle } from "./dark-mode-toggle";
 
 const links = [
+  { href: "", label: "My dashboard" },
   { href: "/habits", label: "Habits" },
   { href: "/budget", label: "Budget" },
-  { href: "/investments", label: "Investments" },
-  { href: "/reading", label: "Reading" },
+  { href: "/investments", label: "Investments", disabled: true },
+  { href: "/reading", label: "Reading", disabled: true },
 ];
 
 export default async function Header() {
   return (
     <header className="border-b">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/app" className="text-lg font-bold">
-          <h1 className="text-xl font-bold">My dashboard</h1>
-        </Link>
-        <nav className="flex items-center gap-4">
-          <div className="flex items-center gap-4">
-            {links.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={`/app${href}`}
-                className="text-sm font-medium hover:underline"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
+      <NavigationMenu className="container mx-auto px-4 py-4 flex justify-between items-center max-w-7xl">
+        <NavigationMenuList>
+          {links.map(({ href, label, disabled }) => {
+            if (disabled) {
+              return null;
+            }
+
+            return (
+              <NavigationMenuItem key={href}>
+                <Link href={`/app${href}`} legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    {label}
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            );
+          })}
+        </NavigationMenuList>
+
+        <div className="flex items-center gap-4">
+          <DarkModeToggle />
 
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -66,8 +80,8 @@ export default async function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </nav>
-      </div>
+        </div>
+      </NavigationMenu>
     </header>
   );
 }
