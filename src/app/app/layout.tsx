@@ -33,7 +33,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset>
-        <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 justify-between">
+        <header className="sticky top-0 flex h-16 shrink-0 bg-background items-center gap-2 border-b z-50 px-4 justify-between">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
