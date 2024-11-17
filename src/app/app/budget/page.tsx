@@ -40,7 +40,6 @@ export default async function BudgetPage() {
               </CardHeader>
               <CardContent>
                 <form className="grid grid-cols-1 gap-4">
-                  <Input type="text" placeholder="Title" className="input" />
                   <Input type="number" placeholder="Amount" className="input" />
                   <DatePickerBudget />
                   <Select>
