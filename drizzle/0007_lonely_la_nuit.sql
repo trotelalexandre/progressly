@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS "habits_completed_days_index" ON "habits" USING btree ("completed_days[]");

@@ -9,171 +9,254 @@ import {
   uniqueIndex,
   index,
   uuid,
+  date,
+  pgPolicy,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { authenticatedRole } from "drizzle-orm/supabase";
 
-export const users = pgTable("users", {
-  id: uuid("id")
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
-  email: text("email").notNull().unique(),
-  passwordHash: text("password_hash"),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-  emailVerified: timestamp("email_verified", { withTimezone: true }),
-  image: text("image"),
-  name: text("name"),
-}).enableRLS();
+const timestamps = {
+  updated_at: timestamp({ withTimezone: true }).defaultNow(),
+  created_at: timestamp({ withTimezone: true }).defaultNow().notNull(),
+};
+
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    email: text("email").notNull().unique(),
+    name: text("name"),
+    password_hash: text("password_hash"),
+    email_verified: timestamp("email_verified", { withTimezone: true }),
+    image: text("image"),
+    ...timestamps,
+  },
+  (table) => [
+    pgPolicy("authenticated users can read their own user", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`true`,
+    }),
+    pgPolicy("authenticated users can insert their own user", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "insert",
+      using: sql`${table.id} = current_user_id()`,
+    }),
+    pgPolicy("authenticated users can update their own user", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "update",
+      using: sql`${table.id} = current_user_id()`,
+    }),
+    pgPolicy("authenticated users can delete their own user", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "delete",
+      using: sql`${table.id} = current_user_id()`,
+    }),
+  ]
+);
 
 export const accounts = pgTable(
   "accounts",
   {
     id: serial("id").primaryKey(),
-    userId: uuid("user_id")
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     type: text("type").notNull(),
     provider: text("provider").notNull(),
-    providerAccountId: text("provider_account_id").notNull(),
-    refreshToken: text("refresh_token"),
-    accessToken: text("access_token"),
-    expiresAt: integer("expires_at"),
-    tokenType: text("token_type"),
+    provider_account_id: text("provider_account_id").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
     scope: text("scope"),
-    idToken: text("id_token"),
-    sessionState: text("session_state"),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+    ...timestamps,
   },
   (table) => ({
-    uniqueProvider: uniqueIndex("unique_provider").on(
+    unique_provider: uniqueIndex("unique_provider").on(
       table.provider,
-      table.providerAccountId
+      table.provider_account_id
     ),
-    userIndex: index("accounts_user_index").on(table.userId),
+    userIndex: index("idx_accounts_user").on(table.user_id),
+    pgPolicy: pgPolicy("authenticated users can read their own accounts", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
   })
-).enableRLS();
+);
 
 export const sessions = pgTable(
   "sessions",
   {
     id: serial("id").primaryKey(),
-    sessionToken: text("session_token").notNull().unique(),
-    userId: uuid("user_id")
+    session_token: text("session_token").notNull().unique(),
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     expires: timestamp("expires", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    ...timestamps,
   },
   (table) => ({
-    userIndex: index("sessions_user_index").on(table.userId),
+    idx_sessions_user: index("idx_sessions_user").on(table.user_id),
+    pgPolicy: pgPolicy("authenticated users can read their own sessions", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
   })
-).enableRLS();
+);
 
-export const verificationTokens = pgTable(
+export const verification_tokens = pgTable(
   "verification_tokens",
   {
     id: serial("id").primaryKey(),
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
-    expires: timestamp("expires", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    ...timestamps,
   },
   (table) => ({
-    uniqueIdentifier: uniqueIndex("verification_tokens_unique_identifier").on(
-      table.identifier,
-      table.token
+    idx_verification_tokens_unique_identifier: uniqueIndex(
+      "idx_verification_tokens_unique_identifier"
+    ).on(table.identifier, table.token),
+    pgPolicy: pgPolicy(
+      "authenticated users can read their own verification tokens",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "select",
+        using: sql`true`,
+      }
     ),
   })
-).enableRLS();
+);
 
 export const authenticators = pgTable(
   "authenticators",
   {
     id: serial("id").primaryKey(),
-    credentialID: text("credential_id").notNull().unique(),
-    userId: uuid("user_id")
+    credential_id: text("credential_id").notNull().unique(),
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    providerAccountId: text("provider_account_id").notNull(),
-    credentialPublicKey: text("credential_public_key").notNull(),
+    provider_account_id: text("provider_account_id").notNull(),
+    credential_public_key: text("credential_public_key").notNull(),
     counter: integer("counter").notNull(),
-    credentialDeviceType: text("credential_device_type").notNull(),
-    credentialBackedUp: boolean("credential_backed_up").notNull(),
+    credential_device_type: text("credential_device_type").notNull(),
+    credential_backed_up: boolean("credential_backed_up").notNull(),
     transports: text("transports"),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    ...timestamps,
   },
   (table) => ({
-    uniqueCredential: uniqueIndex("authenticators_unique_credential").on(
-      table.userId,
-      table.credentialID
+    idx_authenticators_unique_credential: uniqueIndex(
+      "idx_authenticators_unique_credential"
+    ).on(table.user_id, table.credential_id),
+    idx_authenticators_user: index("idx_authenticators_user").on(table.user_id),
+    pgPolicy: pgPolicy(
+      "authenticated users can read their own authenticators",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "select",
+        using: sql`${table.user_id} = current_user_id()`,
+      }
     ),
-    userIndex: index("authenticators_user_index").on(table.userId),
   })
-).enableRLS();
+);
 
 export const habits = pgTable(
   "habits",
   {
     id: serial("id").primaryKey(),
-    userId: uuid("user_id")
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
-    completedDays: integer("completed_days[]").array(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    ...timestamps,
   },
   (table) => ({
-    userIndex: index("habits_user_index").on(table.userId),
-    completedDaysIndex: index("habits_completed_days_index").on(
-      table.completedDays
+    userIndex: index("idx_habits_user").on(table.user_id),
+    pgPolicy: pgPolicy("authenticated users can manage their own habits", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
+  })
+);
+
+export const habit_completed_days = pgTable(
+  "habit_completed_days",
+  {
+    id: serial("id").primaryKey(),
+    habit_id: integer("habit_id")
+      .notNull()
+      .references(() => habits.id, { onDelete: "cascade" }),
+    completed_day: date("completed_day").notNull(),
+    ...timestamps,
+  },
+  (table) => ({
+    habitIndex: index("idx_completed_days_habit").on(table.habit_id),
+    dateIndex: index("idx_completed_days_date").on(table.completed_day),
+    pgPolicy: pgPolicy(
+      "authenticated users can manage their own completed days",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "all",
+        using: sql`${table.habit_id} in (select id from habits where user_id = current_user_id())`,
+      }
     ),
   })
-).enableRLS();
+);
 
 export const transactions = pgTable(
   "transactions",
   {
     id: serial("id").primaryKey(),
-    userId: uuid("user_id")
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     category: text("category").notNull(),
     amount: numeric("amount").notNull(),
     date: timestamp("date", { withTimezone: true }).defaultNow(),
     type: text("type").notNull(),
-    investmentId: integer("investment_id").references(() => investments.id),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    investment_id: integer("investment_id").references(() => investments.id, {
+      onDelete: "cascade",
+    }),
+    ...timestamps,
   },
   (table) => ({
-    userCategoryDateIndex: index("transactions_user_category_date_index").on(
-      table.userId,
-      table.category,
-      table.date
+    idx_transactions_user_category_date: index(
+      "idx_transactions_user_category_date"
+    ).on(table.user_id, table.category, table.date),
+    pgPolicy: pgPolicy(
+      "authenticated users can manage their own transactions",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "all",
+        using: sql`${table.user_id} = current_user_id()`,
+      }
     ),
   })
-).enableRLS();
+);
 
 export const budgets = pgTable(
   "budgets",
   {
     id: serial("id").primaryKey(),
-    userId: uuid("user_id")
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     month: integer("month").notNull(),
@@ -182,61 +265,73 @@ export const budgets = pgTable(
     expenses: numeric("expenses").notNull(),
     investments: numeric("investments").notNull(),
     savings: numeric("savings").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    ...timestamps,
   },
   (table) => ({
-    userYearMonthIndex: index("budgets_user_year_month_index").on(
-      table.userId,
+    idx_budgets_user_year_month: index("idx_budgets_user_year_month").on(
+      table.user_id,
       table.year,
       table.month
     ),
+    pgPolicy: pgPolicy("authenticated users can manage their own budgets", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
   })
-).enableRLS();
+);
 
 export const investments = pgTable(
   "investments",
   {
     id: serial("id").primaryKey(),
-    userId: uuid("user_id")
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     category: text("category").notNull(),
-    buyPrice: numeric("buy_price").notNull(),
+    buy_price: numeric("buy_price").notNull(),
     quantity: integer("quantity").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    ...timestamps,
   },
   (table) => ({
-    userCategoryIndex: index("investments_user_category_index").on(
-      table.userId,
+    idx_investments_user_category: index("idx_investments_user_category").on(
+      table.user_id,
       table.category
     ),
+    pgPolicy: pgPolicy("authenticated users can manage their own investments", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
   })
-).enableRLS();
+);
 
 export const readings = pgTable(
   "readings",
   {
     id: serial("id").primaryKey(),
-    userId: uuid("user_id")
+    user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
-    totalPages: integer("total_pages").notNull(),
-    currentPage: integer("current_page").notNull(),
-    isCompleted: boolean("is_completed").default(false),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
+    total_pages: integer("total_pages").notNull(),
+    current_page: integer("current_page").notNull(),
+    is_completed: boolean("is_completed").default(false),
+    ...timestamps,
   },
   (table) => ({
-    userCompletionIndex: index("readings_user_completion_index").on(
-      table.userId,
-      table.isCompleted
+    idx_readings_user_completion: index("idx_readings_user_completion").on(
+      table.user_id,
+      table.is_completed
     ),
+    pgPolicy: pgPolicy("authenticated users can manage their own readings", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
   })
-).enableRLS();
+);
