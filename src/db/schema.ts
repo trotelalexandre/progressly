@@ -26,36 +26,18 @@ export const users = pgTable(
     id: uuid("id")
       .primaryKey()
       .default(sql`gen_random_uuid()`),
-    email: text("email").notNull().unique(),
-    name: text("name"),
-    password_hash: text("password_hash"),
-    email_verified: timestamp("email_verified", { withTimezone: true }),
-    image: text("image"),
+    email: text("email").notNull().unique(), // email address
+    name: text("name"), // full name
+    password_hash: text("password_hash"), // hashed password
+    email_verified: timestamp("email_verified", { withTimezone: true }), // date when the email was verified
+    image: text("image"), // profile picture URL
     ...timestamps,
   },
   (table) => [
-    pgPolicy("authenticated users can read their own user", {
+    pgPolicy("authenticated users can manage their own user", {
       as: "permissive",
       to: authenticatedRole,
-      for: "select",
-      using: sql`true`,
-    }),
-    pgPolicy("authenticated users can insert their own user", {
-      as: "permissive",
-      to: authenticatedRole,
-      for: "insert",
-      using: sql`${table.id} = current_user_id()`,
-    }),
-    pgPolicy("authenticated users can update their own user", {
-      as: "permissive",
-      to: authenticatedRole,
-      for: "update",
-      using: sql`${table.id} = current_user_id()`,
-    }),
-    pgPolicy("authenticated users can delete their own user", {
-      as: "permissive",
-      to: authenticatedRole,
-      for: "delete",
+      for: "all",
       using: sql`${table.id} = current_user_id()`,
     }),
   ]
@@ -181,7 +163,7 @@ export const habits = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
+    name: text("name").notNull(), // name of the habit
     ...timestamps,
   },
   (table) => ({
@@ -202,7 +184,7 @@ export const habit_completed_days = pgTable(
     habit_id: integer("habit_id")
       .notNull()
       .references(() => habits.id, { onDelete: "cascade" }),
-    completed_day: date("completed_day").notNull(),
+    completed_day: timestamp("completed_day", { withTimezone: true }).notNull(), // date when the habit was completed
     ...timestamps,
   },
   (table) => ({
@@ -220,20 +202,43 @@ export const habit_completed_days = pgTable(
   })
 );
 
-export const transactions = pgTable(
-  "transactions",
+export const income_transactions = pgTable(
+  "income_transactions",
   {
     id: serial("id").primaryKey(),
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    category: text("category").notNull(),
-    amount: numeric("amount").notNull(),
-    date: timestamp("date", { withTimezone: true }).defaultNow(),
-    type: text("type").notNull(),
-    investment_id: integer("investment_id").references(() => investments.id, {
-      onDelete: "cascade",
+    category: text("category").notNull(), // salary, bonus, etc
+    amount: numeric("amount").notNull(), // amount of the transaction
+    currency: text("currency").notNull(), // USD, EUR, etc
+    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
+    ...timestamps,
+  },
+  (table) => ({
+    idx_income_transactions_user_category_date: index(
+      "idx_income_transactions_user_category_date"
+    ).on(table.user_id, table.category, table.date),
+    pgPolicy: pgPolicy("authenticated users can manage their own income", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`${table.user_id} = current_user_id()`,
     }),
+  })
+);
+
+export const expenses_transactions = pgTable(
+  "transactions",
+  {
+    id: serial("id").primaryKey(), // only expenses and investments
+    user_id: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    category: text("category").notNull(), // groceries, rent, etc
+    amount: numeric("amount").notNull(), // amount of the transaction
+    currency: text("currency").notNull(), // USD, EUR, etc
+    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
     ...timestamps,
   },
   (table) => ({
@@ -259,12 +264,11 @@ export const budgets = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    month: integer("month").notNull(),
-    year: integer("year").notNull(),
-    income: numeric("income").notNull(),
-    expenses: numeric("expenses").notNull(),
-    investments: numeric("investments").notNull(),
-    savings: numeric("savings").notNull(),
+    month: integer("month").notNull(), // month of the budget period
+    year: integer("year").notNull(), // year of the budget period
+    income: numeric("income").notNull(), // total income for the month
+    expenses: numeric("expenses").notNull(), // total expenses for the month (planned)
+    investments: numeric("investments").notNull(), // total investments for the month (planned)
     ...timestamps,
   },
   (table) => ({
@@ -282,30 +286,58 @@ export const budgets = pgTable(
   })
 );
 
-export const investments = pgTable(
-  "investments",
+export const portfolio = pgTable(
+  "portfolio",
   {
     id: serial("id").primaryKey(),
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    category: text("category").notNull(),
-    buy_price: numeric("buy_price").notNull(),
-    quantity: integer("quantity").notNull(),
+    currency: text("currency").notNull(), // USD, EUR, etc
+    current_value: numeric("current_value").notNull(), // current value of the portfolio
+    gain_loss: numeric("gain_loss").notNull(), // gain or loss of the portfolio
     ...timestamps,
   },
   (table) => ({
-    idx_investments_user_category: index("idx_investments_user_category").on(
-      table.user_id,
-      table.category
-    ),
+    idx_portfolio_user: index("idx_portfolio_user").on(table.user_id),
     pgPolicy: pgPolicy("authenticated users can manage their own investments", {
       as: "permissive",
       to: authenticatedRole,
       for: "all",
       using: sql`${table.user_id} = current_user_id()`,
     }),
+  })
+);
+
+export const investment_transactions = pgTable(
+  "investment_transactions",
+  {
+    id: serial("id").primaryKey(),
+    portfolio_id: serial("portfolio_id").references(() => portfolio.id, {
+      onDelete: "cascade",
+    }),
+    transaction_type: text("transaction_type").notNull(), // buy or sell
+    asset: text("asset").notNull(), // bitcoin, tesla, etc
+    asset_type: text("asset_type").notNull(), // stock, bond, crypto, etc
+    price: numeric("price").notNull(), // price per unit
+    quantity: integer("quantity").notNull(), // number of units
+    currency: text("currency").notNull(), // USD, EUR, etc
+    current_value: numeric("current_value").notNull(), // current value of the transaction
+    gain_loss: numeric("gain_loss").notNull(), // gain or loss of the transaction
+    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
+    notes: text("notes"),
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy(
+      "authenticated users can manage their own investment transactions",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "all",
+        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = current_user_id())`,
+      }
+    ),
   })
 );
 
@@ -316,10 +348,10 @@ export const readings = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    title: text("title").notNull(),
-    total_pages: integer("total_pages").notNull(),
-    current_page: integer("current_page").notNull(),
-    is_completed: boolean("is_completed").default(false),
+    title: text("title").notNull(), // title of the book
+    total_pages: integer("total_pages").notNull(), // total number of pages in the book
+    current_page: integer("current_page").notNull(), // current page number
+    is_completed: boolean("is_completed").default(false), // whether the book is completed
     ...timestamps,
   },
   (table) => ({
