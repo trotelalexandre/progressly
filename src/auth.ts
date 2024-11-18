@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import GitHub from "next-auth/providers/github";
@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import { signInSchema } from "../schema/auth.schema";
 import { ZodError } from "zod";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GitHub({
@@ -22,47 +22,46 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        return signInWithCredentials(credentials);
+        try {
+          const { name, email, password } =
+            await signInSchema.parseAsync(credentials);
+
+          console.log("email", email);
+
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
+
+          if (user?.passwordHash) {
+            const isValid = await bcrypt.compare(password, user.passwordHash);
+
+            if (isValid) {
+              return user;
+            }
+          }
+
+          // register the user if not found
+          const newUser = await prisma.user.create({
+            data: {
+              name,
+              email,
+              passwordHash: await bcrypt.hash(password, 10),
+            },
+          });
+
+          // TODO: send email verification
+
+          return newUser;
+        } catch (error) {
+          if (error instanceof ZodError) {
+            throw new Error(error.errors[0].message);
+          }
+          console.error(error);
+          throw new Error("Invalid credentials");
+        }
       },
     }),
   ],
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
-
-export async function signInWithCredentials(credentials: any) {
-  try {
-    const { name, email, password } =
-      await signInSchema.parseAsync(credentials);
-
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (user?.passwordHash) {
-      const isValid = await bcrypt.compare(password, user.passwordHash);
-
-      if (isValid) {
-        return user;
-      }
-    }
-
-    // register the user if not found
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        passwordHash: await bcrypt.hash(password, 10),
-      },
-    });
-
-    // TODO: send email verification
-
-    return newUser;
-  } catch (error) {
-    if (error instanceof ZodError) {
-      throw new Error(error.errors[0].message);
-    }
-    throw new Error("Invalid credentials");
-  }
-}
