@@ -1,15 +1,17 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { db } from "./db/db";
 import GitHub from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { signInSchema } from "../schema/auth.schema";
 import { ZodError } from "zod";
 import Resend from "next-auth/providers/resend";
+import { users } from "./db/schema";
+import { eq } from "drizzle-orm";
 
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: DrizzleAdapter(db),
   providers: [
     Resend,
     GitHub({
@@ -28,8 +30,8 @@ export const authOptions = {
           const { name, email, password } =
             await signInSchema.parseAsync(credentials);
 
-          const user = await prisma.user.findUnique({
-            where: { email },
+          const user = await db.query.users.findFirst({
+            where: eq(users.email, email),
           });
 
           if (user?.passwordHash) {
@@ -43,16 +45,18 @@ export const authOptions = {
           }
 
           // register the user if not found
-          const newUser = await prisma.user.create({
-            data: {
+          const result = await db
+            .insert(users)
+            .values({
               name,
               email,
               passwordHash: await bcrypt.hash(password, 10),
-            },
-          });
+            })
+            .returning();
 
           // TODO: send email verification
 
+          const newUser = result[0];
           return newUser;
         } catch (error) {
           if (error instanceof ZodError) {
