@@ -64,6 +64,20 @@
       "when": 1731948608026,
       "tag": "0008_military_groot",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1731948969196,
+      "tag": "0009_fix_schemas",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1731949092311,
+      "tag": "0010_fix_schemas",
+      "breakpoints": true
     }
   ]
 }
