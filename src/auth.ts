@@ -6,10 +6,12 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { signInSchema } from "../schema/auth.schema";
 import { ZodError } from "zod";
+import Resend from "next-auth/providers/resend";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
+    Resend,
     GitHub({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
@@ -26,8 +28,6 @@ export const authOptions = {
           const { name, email, password } =
             await signInSchema.parseAsync(credentials);
 
-          console.log("email", email);
-
           const user = await prisma.user.findUnique({
             where: { email },
           });
@@ -37,6 +37,8 @@ export const authOptions = {
 
             if (isValid) {
               return user;
+            } else {
+              throw new Error("Invalid credentials");
             }
           }
 
