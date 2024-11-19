@@ -15,12 +15,31 @@ import { users } from "./auth";
 import { currency } from "./currency";
 import { timestamps } from "./timestamps";
 
+export const transaction_types = pgTable(
+  "transaction_types",
+  {
+    id: serial("id").primaryKey(),
+    name: text("type").notNull(), // income, expense, investment
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can read transaction types", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`true`,
+    }),
+  })
+);
+
 export const transaction_categories = pgTable(
   "transaction_categories",
   {
     id: serial("id").primaryKey(),
     name: text("category").notNull(), // groceries, rent, etc
-    type: text("type").notNull(), // income, expense, investment
+    type_id: serial("type_id")
+      .notNull()
+      .references(() => transaction_types.id), // income, expense, investment
     emoji: text("emoji"), // emoji for the category
     ...timestamps,
   },
