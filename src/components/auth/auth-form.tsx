@@ -1,3 +1,6 @@
+"use client";
+import "client-only";
+
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Label } from "../ui/label";
@@ -12,9 +15,9 @@ import { Input } from "../ui/input";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { signInWithGoogle } from "../../../actions/auth.action";
 import { features } from "../../../data/features";
-import { FaGoogle } from "react-icons/fa";
+import GoogleButton from "./google-button";
 
-export default async function AuthForm({ signup }: { signup?: boolean }) {
+export default function AuthForm({ signup }: { signup?: boolean }) {
   return (
     <Card className="mx-auto max-w-sm min-w-sm">
       <CardHeader>
@@ -72,10 +75,7 @@ export default async function AuthForm({ signup }: { signup?: boolean }) {
 
           {features.canSignInWithGoogle && (
             <form action={signInWithGoogle}>
-              <Button variant="outline" className="w-full" type="submit">
-                {signup ? "Sign up" : "Login"} with Google
-                <FaGoogle className="w-6 h-6" />
-              </Button>
+              <GoogleButton signup={signup} />
             </form>
           )}
         </div>
