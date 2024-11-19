@@ -53,7 +53,7 @@ export const transaction_categories = pgTable(
   })
 );
 
-export const income_transactions = pgTable(
+export const budget_transactions = pgTable(
   "income_transactions",
   {
     id: serial("id").primaryKey(),
@@ -80,39 +80,6 @@ export const income_transactions = pgTable(
       for: "all",
       using: sql`${table.user_id} = current_user_id()`,
     }),
-  })
-);
-
-export const expenses_transactions = pgTable(
-  "transactions",
-  {
-    id: serial("id").primaryKey(), // only expenses and investments
-    user_id: uuid("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    category_id: serial("category_id")
-      .notNull()
-      .references(() => transaction_categories.id, { onDelete: "cascade" }), // groceries, rent, etc
-    amount: numeric("amount").notNull(), // amount of the transaction
-    currency_id: serial("currency_id")
-      .notNull()
-      .references(() => currency.id), // USD, EUR, etc
-    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
-    ...timestamps,
-  },
-  (table) => ({
-    idx_transactions_user_category_date: index(
-      "idx_transactions_user_category_date"
-    ).on(table.user_id, table.category_id, table.date),
-    pgPolicy: pgPolicy(
-      "authenticated users can manage their own transactions",
-      {
-        as: "permissive",
-        to: authenticatedRole,
-        for: "all",
-        using: sql`${table.user_id} = current_user_id()`,
-      }
-    ),
   })
 );
 
