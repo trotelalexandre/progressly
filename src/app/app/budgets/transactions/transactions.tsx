@@ -33,6 +33,7 @@ export default async function Transactions({ userId }: { userId: string }) {
       eq(budget_transactions.is_archived, false)
     ),
     orderBy: [desc(budget_transactions.date)],
+    limit: 4,
   });
 
   if (!transactions || !transactions.length) {

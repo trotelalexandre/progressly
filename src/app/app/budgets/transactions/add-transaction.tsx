@@ -38,26 +38,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import lodash from "lodash";
-
-const FormSchema = z.object({
-  currency: z.string({
-    required_error: "The transaction currency is required!",
-  }),
-  amount: z
-    .number({
-      required_error: "The transaction amount is required!",
-    })
-    .min(0),
-  date: z.date({
-    required_error: "The transaction date is required!",
-  }),
-  category: z.string({
-    required_error: "The transaction category is required!",
-  }),
-});
+import { addTransaction } from "../../../../../actions/budget";
+import { AddTranssactionFormSchema } from "../../../../../schema/budget.schema";
+import { useState } from "react";
 
 type Categories = {
   name: string;
@@ -71,20 +57,35 @@ export default function AddTransaction({
   userId: string;
   categories: Categories;
 }) {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof AddTranssactionFormSchema>>({
+    resolver: zodResolver(AddTranssactionFormSchema),
     defaultValues: {
       currency: "EUR",
       date: new Date(),
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "Transaction recorded!",
-      description: "Your transaction has been added to your budget.",
-    });
-  }
+  const onSubmit = async (data: z.infer<typeof AddTranssactionFormSchema>) => {
+    setLoading(true);
+
+    try {
+      await addTransaction(data);
+      toast({
+        title: "Transaction recorded!",
+        description: "Your transaction has been added to your budget.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred while adding the transaction.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categoriesGroupByType = lodash.groupBy(categories, "type");
 
@@ -150,7 +151,7 @@ export default function AddTransaction({
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
+                            "max-w-[240px] pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -211,7 +212,13 @@ export default function AddTransaction({
                 </FormItem>
               )}
             />
-            <Button type="submit">Add Transaction</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Add Transaction"
+              )}
+            </Button>
           </form>
         </Form>
       </CardContent>
