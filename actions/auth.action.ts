@@ -1,7 +1,8 @@
 "use server";
 import "server-only";
 
-import { supabaseServer } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 const redirectTo =
   process.env.NODE_ENV === "production"
@@ -9,7 +10,9 @@ const redirectTo =
     : "http://localhost:3000/app";
 
 export const signInWithGoogle = async () => {
-  const { error } = await supabaseServer.auth.signInWithOAuth({
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo,
@@ -20,4 +23,6 @@ export const signInWithGoogle = async () => {
     console.error(error);
     throw new Error("Failed to sign in with Google");
   }
+
+  revalidatePath("/", "layout");
 };

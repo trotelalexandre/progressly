@@ -3,7 +3,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
-import ClientSessionProvider from "@/providers/session-provider";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -29,7 +28,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <ClientSessionProvider>{children}</ClientSessionProvider>
+          {children}
         </ThemeProvider>
       </body>
     </html>

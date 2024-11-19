@@ -10,11 +10,7 @@ import {
 } from "../ui/card";
 import { Input } from "../ui/input";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import {
-  signInWithMagicLink,
-  signInWithGithub,
-  signInWithGoogle,
-} from "../../../actions/auth.action";
+import { signInWithGoogle } from "../../../actions/auth.action";
 import { features } from "../../../data/features";
 import { FaGoogle } from "react-icons/fa";
 
@@ -36,7 +32,7 @@ export default async function AuthForm({ signup }: { signup?: boolean }) {
       <CardContent>
         <div className="grid gap-4">
           {features.canSignInWithMagicLink && (
-            <form action={signInWithMagicLink} className="grid gap-4">
+            <form className="grid gap-4">
               {signup && (
                 <div className="grid gap-2">
                   <Label htmlFor="name">Full Name</Label>
@@ -66,7 +62,7 @@ export default async function AuthForm({ signup }: { signup?: boolean }) {
           )}
 
           {features.canSignInWithGithub && (
-            <form action={signInWithGithub}>
+            <form>
               <Button variant="outline" className="w-full" type="submit">
                 {signup ? "Sign up" : "Login"} with Github{" "}
                 <GitHubLogoIcon className="w-6 h-6" />
