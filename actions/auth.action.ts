@@ -3,7 +3,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { redirectTo } from "@/config/auth";
+import { ENVS } from "@/config/env";
 
 export const signInWithGoogle = async () => {
   const supabase = await createClient();
@@ -11,7 +11,7 @@ export const signInWithGoogle = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo,
+      redirectTo: `${ENVS.BASE_URL}/auth/callback`,
     },
   });
 
