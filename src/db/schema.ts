@@ -201,6 +201,44 @@ export const habit_completed_days = pgTable(
   })
 );
 
+export const currency = pgTable(
+  "currency",
+  {
+    id: serial("id").primaryKey(),
+    code: text("code").notNull(), // USD, EUR, etc
+    name: text("name").notNull(), // US Dollar, Euro, etc
+    symbol: text("symbol").notNull(), // $, €, etc
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can read currency", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`true`,
+    }),
+  })
+);
+
+export const transaction_categories = pgTable(
+  "transaction_categories",
+  {
+    id: serial("id").primaryKey(),
+    name: text("category").notNull(), // groceries, rent, etc
+    type: text("type").notNull(), // income, expense, investment
+    emoji: text("emoji"), // emoji for the category
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can read transaction categories", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`true`,
+    }),
+  })
+);
+
 export const income_transactions = pgTable(
   "income_transactions",
   {
@@ -208,16 +246,20 @@ export const income_transactions = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    category: text("category").notNull(), // salary, bonus, etc
+    category_id: serial("category_id")
+      .notNull()
+      .references(() => transaction_categories.id, { onDelete: "cascade" }), // salary, bonus, etc
     amount: numeric("amount").notNull(), // amount of the transaction
-    currency: text("currency").notNull(), // USD, EUR, etc
+    currency_id: serial("currency_id")
+      .notNull()
+      .references(() => currency.id), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
     ...timestamps,
   },
   (table) => ({
     idx_income_transactions_user_category_date: index(
       "idx_income_transactions_user_category_date"
-    ).on(table.user_id, table.category, table.date),
+    ).on(table.user_id, table.category_id, table.date),
     pgPolicy: pgPolicy("authenticated users can manage their own income", {
       as: "permissive",
       to: authenticatedRole,
@@ -234,16 +276,20 @@ export const expenses_transactions = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    category: text("category").notNull(), // groceries, rent, etc
+    category_id: serial("category_id")
+      .notNull()
+      .references(() => transaction_categories.id, { onDelete: "cascade" }), // groceries, rent, etc
     amount: numeric("amount").notNull(), // amount of the transaction
-    currency: text("currency").notNull(), // USD, EUR, etc
+    currency_id: serial("currency_id")
+      .notNull()
+      .references(() => currency.id), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
     ...timestamps,
   },
   (table) => ({
     idx_transactions_user_category_date: index(
       "idx_transactions_user_category_date"
-    ).on(table.user_id, table.category, table.date),
+    ).on(table.user_id, table.category_id, table.date),
     pgPolicy: pgPolicy(
       "authenticated users can manage their own transactions",
       {
@@ -292,7 +338,9 @@ export const portfolio = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    currency: text("currency").notNull(), // USD, EUR, etc
+    currency_id: serial("currency_id")
+      .notNull()
+      .references(() => currency.id), // USD, EUR, etc
     ...timestamps,
   },
   (table) => ({
@@ -306,28 +354,50 @@ export const portfolio = pgTable(
   })
 );
 
-export const investment_transactions = pgTable(
-  "investment_transactions",
+export const investment_asset_categories = pgTable(
+  "investment_asset_categories",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(), // stocks, bonds, crypto, etc
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy(
+      "authenticated users can read investment asset categories",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "select",
+        using: sql`true`,
+      }
+    ),
+  })
+);
+
+export const investment_user_assets = pgTable(
+  "investment_user_assets",
   {
     id: serial("id").primaryKey(),
     portfolio_id: serial("portfolio_id").references(() => portfolio.id, {
       onDelete: "cascade",
     }),
-    transaction_type: text("transaction_type").notNull(), // buy or sell
     asset: text("asset").notNull(), // bitcoin, tesla, etc
-    asset_type: text("asset_type").notNull(), // stock, bond, crypto, etc
-    price: numeric("price").notNull(), // price per unit
-    quantity: integer("quantity").notNull(), // number of units
-    currency: text("currency").notNull(), // USD, EUR, etc
-    current_value: numeric("current_value").notNull(), // current value of the transaction
-    gain_loss: numeric("gain_loss").notNull(), // gain or loss of the transaction
-    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
-    notes: text("notes"),
+    asset_category_id: serial("asset_category_id").references(
+      () => investment_asset_categories.id
+    ), // stocks, bonds, crypto, etc
+    quantity: numeric("quantity").notNull(), // number of units of the asset
+    currency_id: serial("currency_id")
+      .notNull()
+      .references(() => currency.id), // USD, EUR, etc
+    current_value: numeric("current_value").notNull(), // current value of the asset
     ...timestamps,
   },
   (table) => ({
+    idx_investment_user_assets_portfolio: index(
+      "idx_investment_user_assets_portfolio"
+    ).on(table.portfolio_id),
     pgPolicy: pgPolicy(
-      "authenticated users can manage their own investment transactions",
+      "authenticated users can manage their own investment assets",
       {
         as: "permissive",
         to: authenticatedRole,
@@ -335,6 +405,60 @@ export const investment_transactions = pgTable(
         using: sql`${table.portfolio_id} in (select id from portfolio where user_id = current_user_id())`,
       }
     ),
+  })
+);
+
+export const investment_dividends = pgTable(
+  "investment_dividends",
+  {
+    id: serial("id").primaryKey(),
+    portfolio_id: serial("portfolio_id").references(() => portfolio.id, {
+      onDelete: "cascade",
+    }),
+    asset_id: serial("asset_id").references(() => investment_user_assets.id, {
+      onDelete: "cascade",
+    }), // bitcoin, tesla, etc
+    asset_category_id: serial("asset_category_id").references(
+      () => investment_asset_categories.id
+    ), // stocks, bonds, crypto, etc
+    amount: numeric("amount").notNull(), // amount of the dividend
+    currency_id: serial("currency_id")
+      .notNull()
+      .references(() => currency.id), // USD, EUR, etc
+    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the dividend
+    notes: text("notes"),
+    ...timestamps,
+  },
+  (table) => ({
+    idx_investment_dividends_portfolio_date: index(
+      "idx_investment_dividends_portfolio_date"
+    ).on(table.portfolio_id, table.date),
+    pgPolicy: pgPolicy(
+      "authenticated users can manage their own investment dividends",
+      {
+        as: "permissive",
+        to: authenticatedRole,
+        for: "all",
+        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = current_user_id())`,
+      }
+    ),
+  })
+);
+
+export const reading_categories = pgTable(
+  "reading_categories",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(), // fiction, non-fiction, etc
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can read reading categories", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "select",
+      using: sql`true`,
+    }),
   })
 );
 
@@ -349,6 +473,9 @@ export const readings = pgTable(
     total_pages: integer("total_pages").notNull(), // total number of pages in the book
     current_page: integer("current_page").notNull(), // current page number
     is_completed: boolean("is_completed").default(false), // whether the book is completed
+    category_id: serial("category_id")
+      .notNull()
+      .references(() => reading_categories.id, { onDelete: "cascade" }), // fiction, non-fiction, etc
     ...timestamps,
   },
   (table) => ({
