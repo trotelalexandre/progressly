@@ -24,6 +24,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -55,7 +56,19 @@ const FormSchema = z.object({
   }),
 });
 
-export default function AddTransaction({ userId }: { userId: string }) {
+type Categories = {
+  name: string;
+  type: string;
+  emoji: string | null;
+}[];
+
+export default function AddTransaction({
+  userId,
+  categories,
+}: {
+  userId: string;
+  categories: Categories;
+}) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -171,13 +184,11 @@ export default function AddTransaction({ userId }: { userId: string }) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="food">Food</SelectItem>
-                      <SelectItem value="entertainment">
-                        Entertainment
-                      </SelectItem>
-                      <SelectItem value="transportation">
-                        Transportation
-                      </SelectItem>
+                      {categories?.map((category) => (
+                        <SelectItem key={category.name} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

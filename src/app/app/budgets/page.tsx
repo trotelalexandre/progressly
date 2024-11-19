@@ -39,8 +39,6 @@ export default async function BudgetPage() {
     },
   });
 
-  console.log("categories", categories);
-
   return (
     <div className="flex-col gap-8 flex">
       <Tabs className="space-y-4" defaultValue="transactions">
@@ -51,7 +49,7 @@ export default async function BudgetPage() {
 
         <TabsContent value="transactions">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <AddTransaction userId={userId} />
+            <AddTransaction userId={userId} categories={categories} />
             <Transactions userId={userId} />
           </div>
         </TabsContent>
