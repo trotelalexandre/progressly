@@ -9,7 +9,6 @@ import {
   uniqueIndex,
   index,
   uuid,
-  date,
   pgPolicy,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";

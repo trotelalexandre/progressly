@@ -34,8 +34,8 @@ export const authOptions = {
             where: eq(users.email, email),
           });
 
-          if (user?.passwordHash) {
-            const isValid = await bcrypt.compare(password, user.passwordHash);
+          if (user?.password_hash) {
+            const isValid = await bcrypt.compare(password, user.password_hash);
 
             if (isValid) {
               return user;
@@ -50,7 +50,7 @@ export const authOptions = {
             .values({
               name,
               email,
-              passwordHash: await bcrypt.hash(password, 10),
+              password_hash: await bcrypt.hash(password, 10),
             })
             .returning();
 
