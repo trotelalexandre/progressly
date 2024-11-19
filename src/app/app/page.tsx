@@ -1,13 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, BookOpen, DollarSign, TrendingUp } from "lucide-react";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function HomePage() {
-  const session = await auth();
+  const supabase = await createClient();
 
-  if (!session) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
     redirect("/auth/signin");
   }
 

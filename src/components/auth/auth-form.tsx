@@ -15,13 +15,15 @@ import { Input } from "../ui/input";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { signInWithGoogle } from "../../../actions/auth.action";
 import { features } from "../../../data/features";
-import GoogleButton from "./google-button";
+import { useFormStatus } from "react-dom";
+import { FaGoogle } from "react-icons/fa";
+import { Loader2 } from "lucide-react";
 
 export default function AuthForm({ signup }: { signup?: boolean }) {
   return (
     <Card className="mx-auto max-w-sm min-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">
+        <CardTitle className="text-xl">
           {signup ? "Sign up" : "Login"}
         </CardTitle>
         <CardDescription>
@@ -93,5 +95,25 @@ export default function AuthForm({ signup }: { signup?: boolean }) {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function GoogleButton({ signup }: { signup?: boolean }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      variant="outline"
+      className="w-full"
+      type="submit"
+      disabled={pending}
+    >
+      {pending ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        `${signup ? "Sign up" : "Login"} with Google`
+      )}
+      {!pending && <FaGoogle className="w-6 h-6" />}
+    </Button>
   );
 }

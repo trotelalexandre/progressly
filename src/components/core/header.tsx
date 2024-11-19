@@ -9,7 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import SignOutButton from "../auth/sign-out-button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -18,6 +17,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { DarkModeToggle } from "./dark-mode-toggle";
+import { signOut } from "../../../actions/auth.action";
 
 const links = [
   { href: "", label: "My dashboard" },
@@ -73,10 +73,15 @@ export default async function Header() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <SignOutButton className="text-sm text-left flex items-center">
-                  <LogOutIcon className="w-4 h-4 mr-2" />
-                  <span>Logout</span>
-                </SignOutButton>
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="text-sm text-left flex items-center"
+                  >
+                    <LogOutIcon className="w-4 h-4 mr-2" />
+                    <span>Logout</span>
+                  </button>
+                </form>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

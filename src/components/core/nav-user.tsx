@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
@@ -26,7 +24,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import SignOutButton from "../auth/sign-out-button";
+import { signOut } from "../../../actions/auth.action";
 
 export function NavUser({
   user,
@@ -97,10 +95,12 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <SignOutButton className="flex items-center gap-2">
-                <LogOut className="size-4" />
-                Log out
-              </SignOutButton>
+              <form action={signOut}>
+                <button type="submit" className="flex items-center gap-2">
+                  <LogOut className="size-4" />
+                  Log out
+                </button>
+              </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

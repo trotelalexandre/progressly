@@ -2,17 +2,17 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const redirectTo =
   process.env.NODE_ENV === "production"
-    ? "https://progressly-prod.vercel.app/app"
-    : "http://localhost:3000/app";
+    ? "https://progressly-prod.vercel.app/auth/callback"
+    : "http://localhost:3000/auth/callback";
 
 export const signInWithGoogle = async () => {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo,
@@ -24,5 +24,20 @@ export const signInWithGoogle = async () => {
     throw new Error("Failed to sign in with Google");
   }
 
-  revalidatePath("/", "layout");
+  if (data.url) {
+    redirect(data.url);
+  }
+};
+
+export const signOut = async () => {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Failed to sign out");
+  }
+
+  redirect("/");
 };
