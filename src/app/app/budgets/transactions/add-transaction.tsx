@@ -59,7 +59,6 @@ const FormSchema = z.object({
 type Categories = {
   name: string;
   type: string;
-  emoji: string | null;
 }[];
 
 export default function AddTransaction({

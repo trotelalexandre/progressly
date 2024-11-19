@@ -16,7 +16,6 @@ import Transactions from "./transactions/transactions";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { db } from "@/db/db";
-import { transaction_categories } from "@/db/schema/budgets";
 
 export default async function BudgetPage() {
   const supabase = await createClient();
@@ -35,7 +34,6 @@ export default async function BudgetPage() {
     columns: {
       name: true,
       type: true,
-      emoji: true,
     },
   });
 
