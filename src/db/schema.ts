@@ -294,8 +294,6 @@ export const portfolio = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     currency: text("currency").notNull(), // USD, EUR, etc
-    current_value: numeric("current_value").notNull(), // current value of the portfolio
-    gain_loss: numeric("gain_loss").notNull(), // gain or loss of the portfolio
     ...timestamps,
   },
   (table) => ({
