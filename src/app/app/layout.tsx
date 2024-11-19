@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/ui/toaster";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -54,6 +55,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
         <main className="flex-grow container mx-auto px-4 py-8">
           {children}
         </main>
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   );
