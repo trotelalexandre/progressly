@@ -18,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import { Currency } from "@/types/currency";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
@@ -97,8 +96,8 @@ export default function AddTransaction({ userId }: { userId: string }) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="eur">EUR</SelectItem>
-                        <SelectItem value="usd">USD</SelectItem>
+                        <SelectItem value="EUR">EUR</SelectItem>
+                        <SelectItem value="USD">USD</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -168,7 +167,7 @@ export default function AddTransaction({ userId }: { userId: string }) {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="gap-4 w-fit">
-                        <SelectValue placeholder="Category" />
+                        <SelectValue placeholder="Choose a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -185,12 +184,6 @@ export default function AddTransaction({ userId }: { userId: string }) {
                 </FormItem>
               )}
             />
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent></SelectContent>
-            </Select>
             <Button type="submit">Add Transaction</Button>
           </form>
         </Form>

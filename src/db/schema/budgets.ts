@@ -62,7 +62,7 @@ export const transaction_categories = pgTable(
 );
 
 export const budget_transactions = pgTable(
-  "income_transactions",
+  "budget_transactions",
   {
     id: serial("id").primaryKey(),
     user_id: uuid("user_id")
@@ -75,7 +75,7 @@ export const budget_transactions = pgTable(
     currency: text("currency")
       .notNull()
       .references(() => currency.code, { onDelete: "cascade" }), // USD, EUR, etc
-    date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
+    date: timestamp("date", { withTimezone: true }).notNull().defaultNow(), // date of the transaction
     is_archived: boolean("is_archived").default(false), // whether the transaction is archived
     ...timestamps,
   },

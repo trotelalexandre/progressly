@@ -5,8 +5,52 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { db } from "@/db/db";
+import { budget_transactions } from "@/db/schema/budgets";
+import { format } from "date-fns";
+import { and, desc, eq } from "drizzle-orm";
 
-export default async function Transactions() {
+export default async function Transactions({ userId }: { userId: string }) {
+  const transactions = await db.query.budget_transactions.findMany({
+    columns: {
+      id: true,
+      category: true,
+      amount: true,
+      currency: true,
+      date: true,
+      is_archived: true,
+    },
+    where: and(
+      eq(budget_transactions.user_id, userId),
+      eq(budget_transactions.is_archived, false)
+    ),
+    orderBy: [desc(budget_transactions.date)],
+  });
+
+  if (!transactions || !transactions.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Transactions</CardTitle>
+          <CardDescription>Recent transactions</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-1 h-48 items-center justify-center text-center">
+          <p className="text-sm text-muted-foreground">
+            Nothing to show yet...
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -14,32 +58,28 @@ export default async function Transactions() {
         <CardDescription>Recent transactions</CardDescription>
       </CardHeader>
       <CardContent>
-        <table className="w-full">
-          <thead>
-            <tr>
-              <th className="text-left">Date</th>
-              <th className="text-left">Description</th>
-              <th className="text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2022-03-01</td>
-              <td>Amazon</td>
-              <td className="text-right">$100</td>
-            </tr>
-            <tr>
-              <td>2022-03-02</td>
-              <td>Apple</td>
-              <td className="text-right">$200</td>
-            </tr>
-            <tr>
-              <td>2022-03-03</td>
-              <td>Google</td>
-              <td className="text-right">$300</td>
-            </tr>
-          </tbody>
-        </table>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Currency</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions?.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell>
+                  {format(new Date(transaction.date), "PPP")}
+                </TableCell>
+                <TableCell>{transaction.category}</TableCell>
+                <TableCell>{transaction.amount}</TableCell>
+                <TableCell>{transaction.currency}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

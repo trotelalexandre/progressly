@@ -15,6 +15,8 @@ import AddTransaction from "./transactions/add-transaction";
 import Transactions from "./transactions/transactions";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { db } from "@/db/db";
+import { transaction_categories } from "@/db/schema/budgets";
 
 export default async function BudgetPage() {
   const supabase = await createClient();
@@ -29,6 +31,16 @@ export default async function BudgetPage() {
 
   const userId = user.id;
 
+  const categories = await db.query.transaction_categories.findMany({
+    columns: {
+      name: true,
+      type: true,
+      emoji: true,
+    },
+  });
+
+  console.log("categories", categories);
+
   return (
     <div className="flex-col gap-8 flex">
       <Tabs className="space-y-4" defaultValue="transactions">
@@ -40,7 +52,7 @@ export default async function BudgetPage() {
         <TabsContent value="transactions">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AddTransaction userId={userId} />
-            <Transactions />
+            <Transactions userId={userId} />
           </div>
         </TabsContent>
 

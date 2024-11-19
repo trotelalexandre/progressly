@@ -8,6 +8,20 @@
       "when": 1732043372564,
       "tag": "0000_amazing_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1732044206301,
+      "tag": "0001_broad_thanos",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1732044732015,
+      "tag": "0002_wide_trauma",
+      "breakpoints": true
     }
   ]
 }
