@@ -102,6 +102,9 @@ export const investment_dividends = pgTable(
       onDelete: "cascade",
     }), // bitcoin, tesla, etc
     amount: numeric("amount").notNull(), // amount of the dividend
+    currency_id: uuid("currency_id")
+      .notNull()
+      .references(() => currency.id), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the dividend
     notes: text("notes"), // notes about the dividend
     ...timestamps,
