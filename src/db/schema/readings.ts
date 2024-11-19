@@ -16,8 +16,7 @@ import { timestamps } from "./timestamps";
 export const reading_categories = pgTable(
   "reading_categories",
   {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(), // fiction, non-fiction, etc
+    name: text("name").primaryKey(), // fiction, non-fiction, etc
     ...timestamps,
   },
   (table) => ({
@@ -44,9 +43,9 @@ export const readings = pgTable(
     total_pages: integer("total_pages").notNull(), // total number of pages in the book
     current_page: integer("current_page").notNull(), // current page number
     is_completed: boolean("is_completed").default(false), // whether the book is completed
-    category_id: serial("category_id")
+    category: text("category")
       .notNull()
-      .references(() => reading_categories.id, { onDelete: "cascade" }), // fiction, non-fiction, etc
+      .references(() => reading_categories.name, { onDelete: "cascade" }), // fiction, non-fiction, etc
     ...timestamps,
   },
   (table) => ({

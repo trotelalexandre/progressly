@@ -16,8 +16,7 @@ import { timestamps } from "./timestamps";
 export const habit_frequencies = pgTable(
   "habit_frequencies",
   {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(), // name of the frequency (e.g. "daily", "weekly", "monthly")
+    name: text("name").primaryKey(), // name of the frequency (e.g. "daily", "weekly", "monthly")
     ...timestamps,
   },
   (table) => ({
@@ -38,9 +37,9 @@ export const habits = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(), // name of the habit
-    frequency_id: serial("frequency_id")
+    frequency: text("frequency")
       .notNull()
-      .references(() => habit_frequencies.id, { onDelete: "cascade" }), // frequency of the habit
+      .references(() => habit_frequencies.name, { onDelete: "cascade" }), // frequency of the habit
     is_archived: boolean("is_archived").default(false), // whether the habit is archived
     ...timestamps,
   },

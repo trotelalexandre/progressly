@@ -6,8 +6,7 @@ import { timestamps } from "./timestamps";
 export const currency = pgTable(
   "currency",
   {
-    id: uuid("id").primaryKey(),
-    code: text("code").notNull(), // USD, EUR, etc
+    code: text("code").primaryKey(), // USD, EUR, etc
     name: text("name").notNull(), // US Dollar, Euro, etc
     symbol: text("symbol").notNull(), // $, €, etc
     ...timestamps,

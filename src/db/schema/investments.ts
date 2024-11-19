@@ -21,9 +21,9 @@ export const portfolio = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    currency_id: uuid("currency_id")
+    currency: text("currency")
       .notNull()
-      .references(() => currency.id), // USD, EUR, etc
+      .references(() => currency.code), // USD, EUR, etc
     ...timestamps,
   },
   (table) => ({
@@ -40,8 +40,7 @@ export const portfolio = pgTable(
 export const investment_asset_categories = pgTable(
   "investment_asset_categories",
   {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(), // stocks, bonds, crypto, etc
+    name: text("name").primaryKey(), // stocks, bonds, crypto, etc
     ...timestamps,
   },
   (table) => ({
@@ -60,18 +59,17 @@ export const investment_asset_categories = pgTable(
 export const investment_user_assets = pgTable(
   "investment_user_assets",
   {
-    id: serial("id").primaryKey(),
+    ticker: text("ticker").primaryKey(), // BTC, APPL, etc
     portfolio_id: serial("portfolio_id").references(() => portfolio.id, {
       onDelete: "cascade",
     }),
-    asset: text("asset").notNull(), // bitcoin, tesla, etc
-    asset_category_id: serial("asset_category_id").references(
-      () => investment_asset_categories.id
+    asset_category: text("asset_category").references(
+      () => investment_asset_categories.name
     ), // stocks, bonds, crypto, etc
     quantity: numeric("quantity").notNull(), // number of units of the asset
-    currency_id: uuid("currency_id")
+    currency: text("currency")
       .notNull()
-      .references(() => currency.id), // USD, EUR, etc
+      .references(() => currency.code), // USD, EUR, etc
     current_value: numeric("current_value").notNull(), // current value of the asset (in the currency)
     ...timestamps,
   },
@@ -102,13 +100,13 @@ export const investment_dividends = pgTable(
     portfolio_id: serial("portfolio_id").references(() => portfolio.id, {
       onDelete: "cascade",
     }),
-    asset_id: serial("asset_id").references(() => investment_user_assets.id, {
+    ticker: text("ticker").references(() => investment_user_assets.ticker, {
       onDelete: "cascade",
-    }), // bitcoin, tesla, etc
+    }), // BTC, APPL, etc
     amount: numeric("amount").notNull(), // amount of the dividend
-    currency_id: uuid("currency_id")
+    currency: text("currency")
       .notNull()
-      .references(() => currency.id), // USD, EUR, etc
+      .references(() => currency.code), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the dividend
     notes: text("notes"), // notes about the dividend
     ...timestamps,

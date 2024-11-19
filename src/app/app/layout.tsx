@@ -7,12 +7,26 @@ import {
 } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import { Separator } from "@/components/ui/separator";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export default async function AppLayout({ children }: AppLayoutProps) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/signin");
+  }
+
+  const name = user.user_metadata.full_name.split(" ")[0];
+
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
@@ -31,7 +45,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <span className="font-semibold">Welcome, Guest 👋</span>
+            <span className="font-semibold">Welcome, {name} 👋</span>
           </div>
           <span className="text-muted-foreground text-sm hidden md:block">
             {date}

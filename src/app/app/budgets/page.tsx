@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -7,22 +6,29 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import DatePickerBudget from "@/app/app/budgets/date-picker-budget";
-import SpentChart from "./spent-chart";
+import SpentChart from "./statistics/spent-chart";
 import { TrendingUp } from "lucide-react";
-import CategoriesChart from "./categories-chart";
+import CategoriesChart from "./statistics/categories-chart";
+import AddTransaction from "./transactions/add-transaction";
+import Transactions from "./transactions/transactions";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function BudgetPage() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/signin");
+  }
+
+  const userId = user.id;
+
   return (
     <div className="flex-col gap-8 flex">
       <Tabs className="space-y-4" defaultValue="transactions">
@@ -33,77 +39,8 @@ export default async function BudgetPage() {
 
         <TabsContent value="transactions">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add Transaction</CardTitle>
-                <CardDescription>Record a new transaction</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form className="grid grid-cols-1 gap-4">
-                  <Input type="number" placeholder="Amount" className="input" />
-                  <DatePickerBudget />
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="food">Food</SelectItem>
-                      <SelectItem value="entertainment">
-                        Entertainment
-                      </SelectItem>
-                      <SelectItem value="transportation">
-                        Transportation
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="income">Income</SelectItem>
-                      <SelectItem value="expense">Expense</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button>Add Transaction</Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Transactions</CardTitle>
-                <CardDescription>Recent transactions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <table className="w-full">
-                  <thead>
-                    <tr>
-                      <th className="text-left">Date</th>
-                      <th className="text-left">Description</th>
-                      <th className="text-right">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>2022-03-01</td>
-                      <td>Amazon</td>
-                      <td className="text-right">$100</td>
-                    </tr>
-                    <tr>
-                      <td>2022-03-02</td>
-                      <td>Apple</td>
-                      <td className="text-right">$200</td>
-                    </tr>
-                    <tr>
-                      <td>2022-03-03</td>
-                      <td>Google</td>
-                      <td className="text-right">$300</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
+            <AddTransaction userId={userId} />
+            <Transactions />
           </div>
         </TabsContent>
 

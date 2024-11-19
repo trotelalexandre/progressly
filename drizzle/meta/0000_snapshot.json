@@ -1,5 +1,5 @@
 {
-  "id": "39c80fb6-1299-4c42-a12a-df68c6e0e4f5",
+  "id": "a15372d3-87df-48bc-aa5e-107ab13da901",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,9 +20,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "category_id": {
-          "name": "category_id",
-          "type": "serial",
+        "category": {
+          "name": "category",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -32,9 +32,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "uuid",
+        "currency": {
+          "name": "currency",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -78,7 +78,7 @@
               "nulls": "last"
             },
             {
-              "expression": "category_id",
+              "expression": "category",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -111,30 +111,30 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "income_transactions_category_id_transaction_categories_id_fk": {
-          "name": "income_transactions_category_id_transaction_categories_id_fk",
+        "income_transactions_category_transaction_categories_category_fk": {
+          "name": "income_transactions_category_transaction_categories_category_fk",
           "tableFrom": "income_transactions",
           "tableTo": "transaction_categories",
           "columnsFrom": [
-            "category_id"
+            "category"
           ],
           "columnsTo": [
-            "id"
+            "category"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "income_transactions_currency_id_currency_id_fk": {
-          "name": "income_transactions_currency_id_currency_id_fk",
+        "income_transactions_currency_currency_code_fk": {
+          "name": "income_transactions_currency_currency_code_fk",
           "tableFrom": "income_transactions",
           "tableTo": "currency",
           "columnsFrom": [
-            "currency_id"
+            "currency"
           ],
           "columnsTo": [
-            "id"
+            "code"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -290,21 +290,15 @@
       "name": "transaction_categories",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "category": {
           "name": "category",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
-        "type_id": {
-          "name": "type_id",
-          "type": "serial",
+        "type": {
+          "name": "type",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -345,11 +339,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_transaction_categories_type_id": {
-          "name": "idx_transaction_categories_type_id",
+        "idx_transaction_categories_type_name": {
+          "name": "idx_transaction_categories_type_name",
           "columns": [
             {
-              "expression": "type_id",
+              "expression": "type",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -362,17 +356,17 @@
         }
       },
       "foreignKeys": {
-        "transaction_categories_type_id_transaction_types_id_fk": {
-          "name": "transaction_categories_type_id_transaction_types_id_fk",
+        "transaction_categories_type_transaction_types_type_fk": {
+          "name": "transaction_categories_type_transaction_types_type_fk",
           "tableFrom": "transaction_categories",
           "tableTo": "transaction_types",
           "columnsFrom": [
-            "type_id"
+            "type"
           ],
           "columnsTo": [
-            "id"
+            "type"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -396,16 +390,10 @@
       "name": "transaction_types",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "type": {
           "name": "type",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "updated_at": {
@@ -457,119 +445,14 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user_preferences": {
-      "name": "user_preferences",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_user_preferences_user_id": {
-          "name": "idx_user_preferences_user_id",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "user_preferences_user_id_users_id_fk": {
-          "name": "user_preferences_user_id_users_id_fk",
-          "tableFrom": "user_preferences",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "user_preferences_currency_id_currency_id_fk": {
-          "name": "user_preferences_currency_id_currency_id_fk",
-          "tableFrom": "user_preferences",
-          "tableTo": "currency",
-          "columnsFrom": [
-            "currency_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {
-        "authenticated users can manage their own preferences": {
-          "name": "authenticated users can manage their own preferences",
-          "as": "PERMISSIVE",
-          "for": "ALL",
-          "to": [
-            "authenticated"
-          ],
-          "using": "\"user_preferences\".\"user_id\" = auth.uid()"
-        }
-      },
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.currency": {
       "name": "currency",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true
-        },
         "code": {
           "name": "code",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "name": {
@@ -737,16 +620,10 @@
       "name": "habit_frequencies",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "updated_at": {
@@ -804,9 +681,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "frequency_id": {
-          "name": "frequency_id",
-          "type": "serial",
+        "frequency": {
+          "name": "frequency",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -864,15 +741,15 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "habits_frequency_id_habit_frequencies_id_fk": {
-          "name": "habits_frequency_id_habit_frequencies_id_fk",
+        "habits_frequency_habit_frequencies_name_fk": {
+          "name": "habits_frequency_habit_frequencies_name_fk",
           "tableFrom": "habits",
           "tableTo": "habit_frequencies",
           "columnsFrom": [
-            "frequency_id"
+            "frequency"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -898,16 +775,10 @@
       "name": "investment_asset_categories",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "updated_at": {
@@ -959,11 +830,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "asset_id": {
-          "name": "asset_id",
-          "type": "serial",
+        "ticker": {
+          "name": "ticker",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "amount": {
           "name": "amount",
@@ -971,9 +842,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "uuid",
+        "currency": {
+          "name": "currency",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1042,28 +913,28 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "investment_dividends_asset_id_investment_user_assets_id_fk": {
-          "name": "investment_dividends_asset_id_investment_user_assets_id_fk",
+        "investment_dividends_ticker_investment_user_assets_ticker_fk": {
+          "name": "investment_dividends_ticker_investment_user_assets_ticker_fk",
           "tableFrom": "investment_dividends",
           "tableTo": "investment_user_assets",
           "columnsFrom": [
-            "asset_id"
+            "ticker"
           ],
           "columnsTo": [
-            "id"
+            "ticker"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "investment_dividends_currency_id_currency_id_fk": {
-          "name": "investment_dividends_currency_id_currency_id_fk",
+        "investment_dividends_currency_currency_code_fk": {
+          "name": "investment_dividends_currency_currency_code_fk",
           "tableFrom": "investment_dividends",
           "tableTo": "currency",
           "columnsFrom": [
-            "currency_id"
+            "currency"
           ],
           "columnsTo": [
-            "id"
+            "code"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -1094,9 +965,9 @@
       "name": "investment_user_assets",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "ticker": {
+          "name": "ticker",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
@@ -1106,17 +977,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "asset": {
-          "name": "asset",
+        "asset_category": {
+          "name": "asset_category",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
-        },
-        "asset_category_id": {
-          "name": "asset_category_id",
-          "type": "serial",
-          "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "quantity": {
           "name": "quantity",
@@ -1124,9 +989,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "uuid",
+        "currency": {
+          "name": "currency",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1182,28 +1047,28 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "investment_user_assets_asset_category_id_investment_asset_categories_id_fk": {
-          "name": "investment_user_assets_asset_category_id_investment_asset_categories_id_fk",
+        "investment_user_assets_asset_category_investment_asset_categories_name_fk": {
+          "name": "investment_user_assets_asset_category_investment_asset_categories_name_fk",
           "tableFrom": "investment_user_assets",
           "tableTo": "investment_asset_categories",
           "columnsFrom": [
-            "asset_category_id"
+            "asset_category"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "investment_user_assets_currency_id_currency_id_fk": {
-          "name": "investment_user_assets_currency_id_currency_id_fk",
+        "investment_user_assets_currency_currency_code_fk": {
+          "name": "investment_user_assets_currency_currency_code_fk",
           "tableFrom": "investment_user_assets",
           "tableTo": "currency",
           "columnsFrom": [
-            "currency_id"
+            "currency"
           ],
           "columnsTo": [
-            "id"
+            "code"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -1246,9 +1111,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "currency_id": {
-          "name": "currency_id",
-          "type": "uuid",
+        "currency": {
+          "name": "currency",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1299,15 +1164,15 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "portfolio_currency_id_currency_id_fk": {
-          "name": "portfolio_currency_id_currency_id_fk",
+        "portfolio_currency_currency_code_fk": {
+          "name": "portfolio_currency_currency_code_fk",
           "tableFrom": "portfolio",
           "tableTo": "currency",
           "columnsFrom": [
-            "currency_id"
+            "currency"
           ],
           "columnsTo": [
-            "id"
+            "code"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -1333,16 +1198,10 @@
       "name": "reading_categories",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "updated_at": {
@@ -1435,9 +1294,9 @@
           "notNull": false,
           "default": false
         },
-        "category_id": {
-          "name": "category_id",
-          "type": "serial",
+        "category": {
+          "name": "category",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -1494,15 +1353,15 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "readings_category_id_reading_categories_id_fk": {
-          "name": "readings_category_id_reading_categories_id_fk",
+        "readings_category_reading_categories_name_fk": {
+          "name": "readings_category_reading_categories_name_fk",
           "tableFrom": "readings",
           "tableTo": "reading_categories",
           "columnsFrom": [
-            "category_id"
+            "category"
           ],
           "columnsTo": [
-            "id"
+            "name"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"

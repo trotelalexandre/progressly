@@ -13,39 +13,13 @@ import {
   check,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole, authUsers as users } from "drizzle-orm/supabase";
-import { currency } from "./currency";
 import { timestamps } from "./timestamps";
-
-export const user_preferences = pgTable(
-  "user_preferences",
-  {
-    id: serial("id").primaryKey(),
-    user_id: uuid("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    currency_id: uuid("currency_id")
-      .notNull()
-      .references(() => currency.id, { onDelete: "cascade" }),
-    ...timestamps,
-  },
-  (table) => ({
-    idx_user_preferences_user_id: index("idx_user_preferences_user_id").on(
-      table.user_id
-    ),
-    pgPolicy: pgPolicy("authenticated users can manage their own preferences", {
-      as: "permissive",
-      to: authenticatedRole,
-      for: "all",
-      using: sql`${table.user_id} = auth.uid()`,
-    }),
-  })
-);
+import { currency } from "./currency";
 
 export const transaction_types = pgTable(
   "transaction_types",
   {
-    id: serial("id").primaryKey(),
-    name: text("type").notNull(), // income, expense, investment
+    name: text("type").primaryKey(), // income, expense, investment
     ...timestamps,
   },
   (table) => ({
@@ -64,11 +38,10 @@ export const transaction_types = pgTable(
 export const transaction_categories = pgTable(
   "transaction_categories",
   {
-    id: serial("id").primaryKey(),
-    name: text("category").notNull(), // groceries, rent, etc
-    type_id: serial("type_id")
+    name: text("category").primaryKey(), // groceries, rent, etc
+    type: text("type")
       .notNull()
-      .references(() => transaction_types.id), // income, expense, investment
+      .references(() => transaction_types.name, { onDelete: "cascade" }), // name of the transaction type
     emoji: text("emoji"), // emoji for the category
     ...timestamps,
   },
@@ -77,8 +50,8 @@ export const transaction_categories = pgTable(
       "idx_transaction_categories_name"
     ).on(table.name),
     idx_transaction_categories_type_id: index(
-      "idx_transaction_categories_type_id"
-    ).on(table.type_id),
+      "idx_transaction_categories_type_name"
+    ).on(table.type),
     pgPolicy: pgPolicy("authenticated users can read transaction categories", {
       as: "permissive",
       to: authenticatedRole,
@@ -95,13 +68,13 @@ export const budget_transactions = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    category_id: serial("category_id")
+    category: text("category")
       .notNull()
-      .references(() => transaction_categories.id, { onDelete: "cascade" }), // salary, bonus, etc
+      .references(() => transaction_categories.name, { onDelete: "cascade" }), // salary, bonus, etc
     amount: numeric("amount").notNull(), // amount of the transaction
-    currency_id: uuid("currency_id")
+    currency: text("currency")
       .notNull()
-      .references(() => currency.id), // USD, EUR, etc
+      .references(() => currency.code, { onDelete: "cascade" }), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
     is_archived: boolean("is_archived").default(false), // whether the transaction is archived
     ...timestamps,
@@ -109,7 +82,7 @@ export const budget_transactions = pgTable(
   (table) => ({
     idx_income_transactions_user_category_date: index(
       "idx_income_transactions_user_category_date"
-    ).on(table.user_id, table.category_id, table.date),
+    ).on(table.user_id, table.category, table.date),
     checkConstraint: check("amount is positive", sql`amount >= 0`),
     pgPolicy: pgPolicy("authenticated users can manage their own income", {
       as: "permissive",

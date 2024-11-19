@@ -13,6 +13,8 @@ import { Bike, Book, Cog, HandCoins, Home, PiggyBank } from "lucide-react";
 import Link from "next/link";
 import { NavUser } from "./nav-user";
 import { DarkModeToggle } from "./dark-mode-toggle";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 const items = [
   {
@@ -24,6 +26,7 @@ const items = [
     title: "Habits",
     url: "/app/habits",
     icon: Bike,
+    disabled: true,
   },
   {
     title: "Budgets",
@@ -53,17 +56,27 @@ const footer = [
   },
 ];
 
-const user = {
-  name: "Alexandre",
-  email: "trotelalexandre@proton.me",
-  avatar: "",
-};
+export async function AppSidebar() {
+  const supabase = await createClient();
 
-export function AppSidebar() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/auth/signin");
+  }
+
+  const userMetadata = {
+    name: user.user_metadata.full_name,
+    email: user.email ?? "unknown",
+    avatar: user.user_metadata.avatar_url,
+  };
+
   return (
     <Sidebar>
       <SidebarHeader className="h-16 border-b border-sidebar-border">
-        <NavUser user={user} />
+        <NavUser user={userMetadata} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
