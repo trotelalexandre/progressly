@@ -10,6 +10,7 @@ import {
   integer,
   text,
   boolean,
+  check,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { users } from "./auth";
@@ -110,6 +111,7 @@ export const budget_transactions = pgTable(
     idx_income_transactions_user_category_date: index(
       "idx_income_transactions_user_category_date"
     ).on(table.user_id, table.category_id, table.date),
+    checkConstraint: check("amount is positive", sql`amount >= 0`),
     pgPolicy: pgPolicy("authenticated users can manage their own income", {
       as: "permissive",
       to: authenticatedRole,
@@ -138,6 +140,10 @@ export const budgets = pgTable(
       table.user_id,
       table.year,
       table.month
+    ),
+    checkConstraint: check(
+      "values are positive and month is between 1 and 12",
+      sql`income >= 0 and expenses >= 0 and investments >= 0 and month >= 1 and month <= 12 and year >= 0`
     ),
     pgPolicy: pgPolicy("authenticated users can manage their own budgets", {
       as: "permissive",

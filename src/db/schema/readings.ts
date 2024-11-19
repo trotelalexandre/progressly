@@ -8,6 +8,7 @@ import {
   index,
   text,
   boolean,
+  check,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { users } from "./auth";
@@ -53,6 +54,10 @@ export const readings = pgTable(
     idx_readings_user_completion: index("idx_readings_user_completion").on(
       table.user_id,
       table.is_completed
+    ),
+    checkConstraint: check(
+      "values are positive",
+      sql`${table.total_pages} > 0 and ${table.current_page} >= 0 and ${table.current_page} <= ${table.total_pages}`
     ),
     pgPolicy: pgPolicy("authenticated users can manage their own readings", {
       as: "permissive",

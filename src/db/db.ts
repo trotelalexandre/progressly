@@ -3,7 +3,7 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as authSchema from "./schema/auth";
-import * as budgetSchema from "./schema/budget";
+import * as budgetsSchema from "./schema/budgets";
 import * as currencySchema from "./schema/currency";
 import * as habitsSchema from "./schema/habits";
 import * as investmentsSchema from "./schema/investments";
@@ -19,7 +19,7 @@ export const client = postgres(connectionString, {
 export const db = drizzle(client, {
   schema: {
     ...authSchema,
-    ...budgetSchema,
+    ...budgetsSchema,
     ...currencySchema,
     ...habitsSchema,
     ...investmentsSchema,

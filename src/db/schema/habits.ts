@@ -8,7 +8,6 @@ import {
   integer,
   timestamp,
   text,
-  numeric,
   boolean,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";

@@ -8,6 +8,7 @@ import {
   numeric,
   timestamp,
   text,
+  check,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { users } from "./auth";
@@ -72,13 +73,17 @@ export const investment_user_assets = pgTable(
     currency_id: uuid("currency_id")
       .notNull()
       .references(() => currency.id), // USD, EUR, etc
-    current_value: numeric("current_value").notNull(), // current value of the asset
+    current_value: numeric("current_value").notNull(), // current value of the asset (in the currency)
     ...timestamps,
   },
   (table) => ({
     idx_investment_user_assets_portfolio: index(
       "idx_investment_user_assets_portfolio"
     ).on(table.portfolio_id),
+    checkConstraint: check(
+      "values are positive",
+      sql`${table.quantity} >= 0 and ${table.current_value} >= 0`
+    ),
     pgPolicy: pgPolicy(
       "authenticated users can manage their own investment assets",
       {
@@ -113,6 +118,7 @@ export const investment_dividends = pgTable(
     idx_investment_dividends_portfolio_date: index(
       "idx_investment_dividends_portfolio_date"
     ).on(table.portfolio_id, table.date),
+    checkConstraint: check("amount is positive", sql`amount >= 0`),
     pgPolicy: pgPolicy(
       "authenticated users can manage their own investment dividends",
       {
