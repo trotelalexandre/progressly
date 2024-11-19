@@ -29,6 +29,9 @@ export const user_preferences = pgTable(
     ...timestamps,
   },
   (table) => ({
+    idx_user_preferences_user_id: index("idx_user_preferences_user_id").on(
+      table.user_id
+    ),
     pgPolicy: pgPolicy("authenticated users can manage their own preferences", {
       as: "permissive",
       to: authenticatedRole,
@@ -46,6 +49,9 @@ export const transaction_types = pgTable(
     ...timestamps,
   },
   (table) => ({
+    idx_transaction_types_name: index("idx_transaction_types_name").on(
+      table.name
+    ),
     pgPolicy: pgPolicy("authenticated users can read transaction types", {
       as: "permissive",
       to: authenticatedRole,
@@ -67,6 +73,12 @@ export const transaction_categories = pgTable(
     ...timestamps,
   },
   (table) => ({
+    idx_transaction_categories_name: index(
+      "idx_transaction_categories_name"
+    ).on(table.name),
+    idx_transaction_categories_type_id: index(
+      "idx_transaction_categories_type_id"
+    ).on(table.type_id),
     pgPolicy: pgPolicy("authenticated users can read transaction categories", {
       as: "permissive",
       to: authenticatedRole,

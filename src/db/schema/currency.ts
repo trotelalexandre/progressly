@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, pgPolicy, text, uuid } from "drizzle-orm/pg-core";
+import { pgTable, pgPolicy, text, uuid, index } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { timestamps } from "./timestamps";
 
@@ -13,6 +13,7 @@ export const currency = pgTable(
     ...timestamps,
   },
   (table) => ({
+    idx_currency_code: index("idx_currency_code").on(table.code),
     pgPolicy: pgPolicy("authenticated users can read currency", {
       as: "permissive",
       to: authenticatedRole,

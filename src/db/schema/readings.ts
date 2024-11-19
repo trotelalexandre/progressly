@@ -21,6 +21,9 @@ export const reading_categories = pgTable(
     ...timestamps,
   },
   (table) => ({
+    idx_reading_categories_name: index("idx_reading_categories_name").on(
+      table.name
+    ),
     pgPolicy: pgPolicy("authenticated users can read reading categories", {
       as: "permissive",
       to: authenticatedRole,

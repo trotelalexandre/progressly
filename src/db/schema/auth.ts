@@ -27,14 +27,14 @@ export const users = pgTable(
     image: text("image"), // profile picture URL
     ...timestamps,
   },
-  (table) => [
-    pgPolicy("authenticated users can manage their own user", {
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can manage their own user", {
       as: "permissive",
       to: authenticatedRole,
       for: "all",
       using: sql`${table.id} = current_user_id()`,
     }),
-  ]
+  })
 );
 
 export const accounts = pgTable(
