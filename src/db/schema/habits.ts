@@ -10,8 +10,7 @@ import {
   text,
   boolean,
 } from "drizzle-orm/pg-core";
-import { authenticatedRole } from "drizzle-orm/supabase";
-import { users } from "./auth";
+import { authenticatedRole, authUsers as users } from "drizzle-orm/supabase";
 import { timestamps } from "./timestamps";
 
 export const habit_frequencies = pgTable(

@@ -18,7 +18,6 @@ export const client = postgres(connectionString, {
 });
 export const db = drizzle(client, {
   schema: {
-    ...authSchema,
     ...budgetsSchema,
     ...currencySchema,
     ...habitsSchema,

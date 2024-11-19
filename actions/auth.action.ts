@@ -1,28 +1,23 @@
 "use server";
 import "server-only";
 
-import { signIn } from "@/auth";
+import { supabaseServer } from "@/lib/supabase";
 
-export const signInWithCredentials = async (formData: FormData) => {
-  await signIn("credentials", formData, {
-    redirectTo: "/app",
-  });
-};
-
-export const signInWithGithub = async () => {
-  await signIn("github", {
-    redirectTo: "/app",
-  });
-};
+const redirectTo =
+  process.env.NODE_ENV === "production"
+    ? "https://progressly-prod.vercel.app/app"
+    : "http://localhost:3000/app";
 
 export const signInWithGoogle = async () => {
-  await signIn("google", {
-    redirectTo: "/app",
+  const { error } = await supabaseServer.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo,
+    },
   });
-};
 
-export const signInWithMagicLink = async (formData: FormData) => {
-  await signIn("resend", formData, {
-    redirectTo: "/app",
-  });
+  if (error) {
+    console.error(error);
+    throw new Error("Failed to sign in with Google");
+  }
 };

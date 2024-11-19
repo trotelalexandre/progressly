@@ -12,8 +12,7 @@ import {
   boolean,
   check,
 } from "drizzle-orm/pg-core";
-import { authenticatedRole } from "drizzle-orm/supabase";
-import { users } from "./auth";
+import { authenticatedRole, authUsers as users } from "drizzle-orm/supabase";
 import { currency } from "./currency";
 import { timestamps } from "./timestamps";
 
