@@ -1,3 +1,3 @@
-export default function ReadingPage() {
+export default function ReadingsPage() {
   return null;
 }

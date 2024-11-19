@@ -17,7 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { db } from "@/db/db";
 
-export default async function BudgetPage() {
+export default async function BudgetsPage() {
   const supabase = await createClient();
 
   const {
