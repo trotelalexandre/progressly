@@ -14,6 +14,8 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
+  SelectGroup,
+  SelectLabel,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +40,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import lodash from "lodash";
 
 const FormSchema = z.object({
   currency: z.string({
@@ -82,6 +85,8 @@ export default function AddTransaction({
       description: "Your transaction has been added to your budget.",
     });
   }
+
+  const categoriesGroupByType = lodash.groupBy(categories, "type");
 
   return (
     <Card>
@@ -183,11 +188,23 @@ export default function AddTransaction({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {categories?.map((category) => (
-                        <SelectItem key={category.name} value={category.name}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
+                      {Object.entries(categoriesGroupByType).map(
+                        ([type, categories]) => (
+                          <SelectGroup key={type}>
+                            <SelectLabel>
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </SelectLabel>
+                            {categories?.map((category) => (
+                              <SelectItem
+                                key={category.name}
+                                value={category.name}
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
