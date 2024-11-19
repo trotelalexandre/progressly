@@ -32,7 +32,7 @@ export const users = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.id} = current_user_id()`,
+      using: sql`${table.id} = auth.uid()`,
     }),
   })
 );
@@ -66,7 +66,7 @@ export const accounts = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "select",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
@@ -88,7 +88,7 @@ export const sessions = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "select",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
@@ -144,7 +144,7 @@ export const authenticators = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "select",
-        using: sql`${table.user_id} = current_user_id()`,
+        using: sql`${table.user_id} = auth.uid()`,
       }
     ),
   })

@@ -33,7 +33,7 @@ export const portfolio = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
@@ -90,7 +90,7 @@ export const investment_user_assets = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "all",
-        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = current_user_id())`,
+        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = auth.uid())`,
       }
     ),
   })
@@ -125,7 +125,7 @@ export const investment_dividends = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "all",
-        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = current_user_id())`,
+        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = auth.uid())`,
       }
     ),
   })

@@ -51,7 +51,7 @@ export const habits = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
@@ -75,7 +75,7 @@ export const habit_completed_days = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "all",
-        using: sql`${table.habit_id} in (select id from habits where user_id = current_user_id())`,
+        using: sql`${table.habit_id} in (select id from habits where user_id = auth.uid())`,
       }
     ),
   })

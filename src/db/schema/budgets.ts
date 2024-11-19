@@ -37,7 +37,7 @@ export const user_preferences = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
@@ -116,7 +116,7 @@ export const budget_transactions = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
@@ -149,7 +149,7 @@ export const budgets = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.user_id} = current_user_id()`,
+      using: sql`${table.user_id} = auth.uid()`,
     }),
   })
 );
