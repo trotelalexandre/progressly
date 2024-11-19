@@ -3,15 +3,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-
-const VERCEL_ENV = process.env.VERCEL_ENV;
-
-const redirectTo =
-  VERCEL_ENV === "production"
-    ? "https://progressly-prod.vercel.app/auth/callback"
-    : VERCEL_ENV === "preview"
-      ? "https://progressly-staging.vercel.app/auth/callback"
-      : "http://localhost:3000/auth/callback";
+import { redirectTo } from "@/config/auth";
 
 export const signInWithGoogle = async () => {
   const supabase = await createClient();
