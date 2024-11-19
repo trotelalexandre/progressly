@@ -9,11 +9,34 @@ import {
   index,
   integer,
   text,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { users } from "./auth";
 import { currency } from "./currency";
 import { timestamps } from "./timestamps";
+
+export const user_preferences = pgTable(
+  "user_preferences",
+  {
+    id: serial("id").primaryKey(),
+    user_id: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    currency_id: uuid("currency_id")
+      .notNull()
+      .references(() => currency.id, { onDelete: "cascade" }),
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can manage their own preferences", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`${table.user_id} = current_user_id()`,
+    }),
+  })
+);
 
 export const transaction_types = pgTable(
   "transaction_types",
@@ -64,10 +87,11 @@ export const budget_transactions = pgTable(
       .notNull()
       .references(() => transaction_categories.id, { onDelete: "cascade" }), // salary, bonus, etc
     amount: numeric("amount").notNull(), // amount of the transaction
-    currency_id: serial("currency_id")
+    currency_id: uuid("currency_id")
       .notNull()
       .references(() => currency.id), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the transaction
+    is_archived: boolean("is_archived").default(false), // whether the transaction is archived
     ...timestamps,
   },
   (table) => ({

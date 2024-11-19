@@ -8,10 +8,29 @@ import {
   integer,
   timestamp,
   text,
+  numeric,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { users } from "./auth";
 import { timestamps } from "./timestamps";
+
+export const habit_frequencies = pgTable(
+  "habit_frequencies",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(), // name of the frequency (e.g. "daily", "weekly", "monthly")
+    ...timestamps,
+  },
+  (table) => ({
+    pgPolicy: pgPolicy("authenticated users can manage habit frequencies", {
+      as: "permissive",
+      to: authenticatedRole,
+      for: "all",
+      using: sql`true`,
+    }),
+  })
+);
 
 export const habits = pgTable(
   "habits",
@@ -21,6 +40,10 @@ export const habits = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(), // name of the habit
+    frequency_id: serial("frequency_id")
+      .notNull()
+      .references(() => habit_frequencies.id, { onDelete: "cascade" }), // frequency of the habit
+    is_archived: boolean("is_archived").default(false), // whether the habit is archived
     ...timestamps,
   },
   (table) => ({

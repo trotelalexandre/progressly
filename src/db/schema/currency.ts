@@ -1,12 +1,12 @@
 import { sql } from "drizzle-orm";
-import { pgTable, serial, pgPolicy, text } from "drizzle-orm/pg-core";
+import { pgTable, pgPolicy, text, uuid } from "drizzle-orm/pg-core";
 import { authenticatedRole } from "drizzle-orm/supabase";
 import { timestamps } from "./timestamps";
 
 export const currency = pgTable(
   "currency",
   {
-    id: serial("id").primaryKey(),
+    id: uuid("id").primaryKey(),
     code: text("code").notNull(), // USD, EUR, etc
     name: text("name").notNull(), // US Dollar, Euro, etc
     symbol: text("symbol").notNull(), // $, €, etc

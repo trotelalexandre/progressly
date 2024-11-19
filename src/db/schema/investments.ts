@@ -21,7 +21,7 @@ export const portfolio = pgTable(
     user_id: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    currency_id: serial("currency_id")
+    currency_id: uuid("currency_id")
       .notNull()
       .references(() => currency.id), // USD, EUR, etc
     ...timestamps,
@@ -69,7 +69,7 @@ export const investment_user_assets = pgTable(
       () => investment_asset_categories.id
     ), // stocks, bonds, crypto, etc
     quantity: numeric("quantity").notNull(), // number of units of the asset
-    currency_id: serial("currency_id")
+    currency_id: uuid("currency_id")
       .notNull()
       .references(() => currency.id), // USD, EUR, etc
     current_value: numeric("current_value").notNull(), // current value of the asset
@@ -101,15 +101,9 @@ export const investment_dividends = pgTable(
     asset_id: serial("asset_id").references(() => investment_user_assets.id, {
       onDelete: "cascade",
     }), // bitcoin, tesla, etc
-    asset_category_id: serial("asset_category_id").references(
-      () => investment_asset_categories.id
-    ), // stocks, bonds, crypto, etc
     amount: numeric("amount").notNull(), // amount of the dividend
-    currency_id: serial("currency_id")
-      .notNull()
-      .references(() => currency.id), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).defaultNow(), // date of the dividend
-    notes: text("notes"),
+    notes: text("notes"), // notes about the dividend
     ...timestamps,
   },
   (table) => ({
