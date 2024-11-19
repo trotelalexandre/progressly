@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import DatePickerBudget from "@/app/app/budget/date-picker-budget";
+import DatePickerBudget from "@/app/app/budgets/date-picker-budget";
 import SpentChart from "./spent-chart";
 import { TrendingUp } from "lucide-react";
 import CategoriesChart from "./categories-chart";

@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import { signInSchema } from "../schema/auth.schema";
 import { ZodError } from "zod";
 import Resend from "next-auth/providers/resend";
-import { users } from "./db/schema";
+import { users } from "./db/schema/auth";
 import { eq } from "drizzle-orm";
 
 export const authOptions = {

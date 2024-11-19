@@ -2,7 +2,13 @@ import "dotenv/config";
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import * as authSchema from "./schema/auth";
+import * as budgetSchema from "./schema/budget";
+import * as currencySchema from "./schema/currency";
+import * as habitsSchema from "./schema/habits";
+import * as investmentsSchema from "./schema/investments";
+import * as readingsSchema from "./schema/readings";
+import * as timestampsSchema from "./schema/timestamps";
 
 const connectionString = process.env.POSTGRES_URL!;
 
@@ -10,4 +16,14 @@ const connectionString = process.env.POSTGRES_URL!;
 export const client = postgres(connectionString, {
   prepare: false,
 });
-export const db = drizzle(client, { schema });
+export const db = drizzle(client, {
+  schema: {
+    ...authSchema,
+    ...budgetSchema,
+    ...currencySchema,
+    ...habitsSchema,
+    ...investmentsSchema,
+    ...readingsSchema,
+    ...timestampsSchema,
+  },
+});

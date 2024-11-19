@@ -22,9 +22,9 @@ import { DarkModeToggle } from "./dark-mode-toggle";
 const links = [
   { href: "", label: "My dashboard" },
   { href: "/habits", label: "Habits" },
-  { href: "/budget", label: "Budget" },
+  { href: "/budgets", label: "Budgets" },
   { href: "/investments", label: "Investments", disabled: true },
-  { href: "/reading", label: "Reading", disabled: true },
+  { href: "/readings", label: "Readings", disabled: true },
 ];
 
 export default async function Header() {

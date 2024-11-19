@@ -26,8 +26,8 @@ const items = [
     icon: Bike,
   },
   {
-    title: "Budget",
-    url: "/app/budget",
+    title: "Budgets",
+    url: "/app/budgets",
     icon: PiggyBank,
   },
   {
@@ -38,7 +38,7 @@ const items = [
   },
   {
     title: "Reading",
-    url: "/app/reading",
+    url: "/app/readings",
     icon: Book,
     disabled: true,
   },
