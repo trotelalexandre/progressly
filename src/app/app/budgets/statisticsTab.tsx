@@ -1,3 +1,4 @@
+import { Dictionary } from "lodash";
 import CategoriesChart from "./statistics/charts/categories-chart";
 import SpentChart from "./statistics/charts/spent-chart";
 import IncomeVsExpenses from "./statistics/income-vs-expenses";
@@ -13,6 +14,11 @@ type Transaction = {
   is_archived: boolean | null;
 };
 
+type Category = {
+  type: string;
+  name: string;
+};
+
 interface StatisticsTabProps {
   transactions: Transaction[];
   totalIncome: number;
@@ -23,6 +29,7 @@ interface StatisticsTabProps {
   essentialPercentage: number;
   lifestylePercentage: number;
   investmentPercentage: number;
+  categoriesByType: Dictionary<Category[]>;
 }
 
 export default function StatisticsTab({
@@ -35,6 +42,7 @@ export default function StatisticsTab({
   essentialPercentage,
   lifestylePercentage,
   investmentPercentage,
+  categoriesByType,
 }: StatisticsTabProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -78,8 +86,14 @@ export default function StatisticsTab({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SpentChart transactions={transactions} />
-        <CategoriesChart expensesByCategory={expensesByCategory} />
+        <SpentChart
+          transactions={transactions}
+          categoriesByType={categoriesByType}
+        />
+        <CategoriesChart
+          expensesByCategory={expensesByCategory}
+          categoriesByType={categoriesByType}
+        />
       </div>
     </div>
   );

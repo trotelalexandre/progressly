@@ -64,6 +64,7 @@ export default async function BudgetsPage() {
             essentialPercentage={essentialPercentage}
             lifestylePercentage={lifestylePercentage}
             investmentPercentage={investmentPercentage}
+            categoriesByType={categoriesByType}
           />
         </TabsContent>
       </Tabs>

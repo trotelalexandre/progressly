@@ -8,7 +8,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import lodash from "lodash";
 import {
   Card,
   CardHeader,
@@ -18,9 +17,9 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { eachDayOfInterval, format } from "date-fns";
 import { getSpentChart } from "@/utils/budgets/charts/getSpentChart";
 import { getUniqueTransactionsDaysCount } from "@/utils/budgets/getUniqueTransactionsDaysCount";
+import { Dictionary } from "lodash";
 
 const chartConfig = {
   spent: {
@@ -38,11 +37,20 @@ type Transaction = {
   is_archived: boolean | null;
 };
 
+type Category = {
+  type: string;
+  name: string;
+};
+
 interface SpentChartProps {
   transactions: Transaction[];
+  categoriesByType: Dictionary<Category[]>;
 }
 
-export default function SpentChart({ transactions }: SpentChartProps) {
+export default function SpentChart({
+  transactions,
+  categoriesByType,
+}: SpentChartProps) {
   const uniqueTransactionDaysCount =
     getUniqueTransactionsDaysCount(transactions);
 
@@ -62,7 +70,7 @@ export default function SpentChart({ transactions }: SpentChartProps) {
     );
   }
 
-  const { chartData, trend } = getSpentChart(transactions);
+  const { chartData, trend } = getSpentChart(transactions, categoriesByType);
 
   return (
     <Card>

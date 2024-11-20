@@ -1,5 +1,6 @@
 import { eachDayOfInterval, format } from "date-fns";
 import lodash from "lodash";
+import { getTransactionsByType } from "../getTransactionsByType";
 
 type Transaction = {
   date: Date;
@@ -10,18 +11,37 @@ type Transaction = {
   is_archived: boolean | null;
 };
 
-export const getSpentChart = (transactions: Transaction[]) => {
+type Category = {
+  type: string;
+  name: string;
+};
+
+type CategoriesByType = lodash.Dictionary<Category[]>;
+
+export const getSpentChart = (
+  transactions: Transaction[],
+  categoriesByType: CategoriesByType
+) => {
+  const transactionsByType = getTransactionsByType(
+    transactions,
+    categoriesByType
+  );
+
+  delete transactionsByType["income"];
+  delete transactionsByType["investment"];
+
+  const expenseTransactions = Object.values(transactionsByType).flat();
+
   const allDates = eachDayOfInterval({
     start: new Date(
-      Math.min(...transactions.map((t) => new Date(t.date).getTime()))
+      Math.min(...expenseTransactions.map((t) => new Date(t.date).getTime()))
     ),
-    end: new Date(
-      Math.max(...transactions.map((t) => new Date(t.date).getTime()))
-    ),
+    end: new Date(),
   });
 
-  const transactionsPerDay = lodash.groupBy(transactions, (transaction) =>
-    format(new Date(transaction.date), "yyyy-MM-dd")
+  const transactionsPerDay = lodash.groupBy(
+    expenseTransactions,
+    (transaction) => format(new Date(transaction.date), "yyyy-MM-dd")
   );
 
   const chartData = allDates.map((date) => {

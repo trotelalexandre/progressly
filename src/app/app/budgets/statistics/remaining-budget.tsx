@@ -40,7 +40,7 @@ export default function RemainingBudget({
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold">
-          {remainingBudget} {currency}
+          {remainingBudget.toFixed(0)} {currency}
         </div>
       </CardContent>
       <CardFooter>

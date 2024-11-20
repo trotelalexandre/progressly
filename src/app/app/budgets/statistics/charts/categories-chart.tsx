@@ -3,7 +3,6 @@ import "client-only";
 
 import { LabelList, Pie, PieChart } from "recharts";
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -17,13 +16,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCategoriesChart } from "@/utils/budgets/charts/getCategoriesChart";
+import { Dictionary } from "lodash";
+
+type Category = {
+  type: string;
+  name: string;
+};
 
 interface CategoriesChartProps {
   expensesByCategory: { [key: string]: number };
+  categoriesByType: Dictionary<Category[]>;
 }
 
 export default function CategoriesChart({
   expensesByCategory,
+  categoriesByType,
 }: CategoriesChartProps) {
   if (!Object.keys(expensesByCategory)?.length) {
     return (
@@ -41,7 +48,10 @@ export default function CategoriesChart({
     );
   }
 
-  const { chartData, chartConfig } = getCategoriesChart(expensesByCategory);
+  const { chartData, chartConfig } = getCategoriesChart(
+    expensesByCategory,
+    categoriesByType
+  );
 
   return (
     <Card>
