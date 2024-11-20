@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next lint && next build",
+    "build": "jest --ci && next lint && next build",
+    "postinstall": "jest --ci && next lint",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
