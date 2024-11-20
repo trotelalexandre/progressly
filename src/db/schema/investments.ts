@@ -10,7 +10,11 @@ import {
   text,
   check,
 } from "drizzle-orm/pg-core";
-import { authenticatedRole, authUsers as users } from "drizzle-orm/supabase";
+import {
+  authenticatedRole,
+  authUsers as users,
+  authUid,
+} from "drizzle-orm/supabase";
 import { currency } from "./currency";
 import { timestamps } from "./timestamps";
 
@@ -32,7 +36,7 @@ export const portfolio = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`(${table.user_id} = (select auth.uid()))`,
+      using: sql`(${table.user_id} = ${authUid})`,
     }),
   })
 );
@@ -87,7 +91,7 @@ export const investment_user_assets = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "all",
-        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = (select auth.uid()))`,
+        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = ${authUid})`,
       }
     ),
   })
@@ -122,7 +126,7 @@ export const investment_dividends = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "all",
-        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = (select auth.uid()))`,
+        using: sql`${table.portfolio_id} in (select id from portfolio where user_id = ${authUid})`,
       }
     ),
   })

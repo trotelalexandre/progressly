@@ -10,7 +10,11 @@ import {
   boolean,
   check,
 } from "drizzle-orm/pg-core";
-import { authenticatedRole, authUsers as users } from "drizzle-orm/supabase";
+import {
+  authenticatedRole,
+  authUsers as users,
+  authUid,
+} from "drizzle-orm/supabase";
 import { timestamps } from "./timestamps";
 
 export const reading_categories = pgTable(
@@ -61,7 +65,7 @@ export const readings = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`(${table.user_id} = (select auth.uid()))`,
+      using: sql`${table.user_id} = ${authUid}`,
     }),
   })
 );

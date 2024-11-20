@@ -10,7 +10,11 @@ import {
   text,
   boolean,
 } from "drizzle-orm/pg-core";
-import { authenticatedRole, authUsers as users } from "drizzle-orm/supabase";
+import {
+  authenticatedRole,
+  authUsers as users,
+  authUid,
+} from "drizzle-orm/supabase";
 import { timestamps } from "./timestamps";
 
 export const habit_frequencies = pgTable(
@@ -49,7 +53,7 @@ export const habits = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`(${table.user_id} = (select auth.uid()))`,
+      using: sql`(${table.user_id} = ${authUid})`,
     }),
   })
 );
@@ -73,7 +77,7 @@ export const habit_completed_days = pgTable(
         as: "permissive",
         to: authenticatedRole,
         for: "all",
-        using: sql`${table.habit_id} in (select id from habits where user_id = (select auth.uid()))`,
+        using: sql`${table.habit_id} in (select id from habits where user_id = ${authUid})`,
       }
     ),
   })
