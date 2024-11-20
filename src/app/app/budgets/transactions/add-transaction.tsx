@@ -44,6 +44,7 @@ import lodash from "lodash";
 import { addTransaction } from "../../../../../actions/budget";
 import { AddTranssactionFormSchema } from "../../../../../schema/budget.schema";
 import { useState } from "react";
+import { getCategoriesByType } from "@/utils/budgets/getCategoriesByType";
 
 type Categories = {
   name: string;
@@ -87,7 +88,7 @@ export default function AddTransaction({
     }
   };
 
-  const categoriesGroupByType = lodash.groupBy(categories, "type");
+  const categoriesByType = getCategoriesByType(categories);
 
   return (
     <Card>
@@ -189,7 +190,7 @@ export default function AddTransaction({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.entries(categoriesGroupByType).map(
+                      {Object.entries(categoriesByType).map(
                         ([type, categories]) => (
                           <SelectGroup key={type}>
                             <SelectLabel>

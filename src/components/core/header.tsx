@@ -27,7 +27,7 @@ const links = [
   { href: "/readings", label: "Readings", disabled: true },
 ];
 
-export default async function Header() {
+export default async function Header({ username }: { username: string }) {
   return (
     <header className="border-b">
       <NavigationMenu className="container mx-auto px-4 py-4 flex justify-between items-center max-w-7xl">
@@ -56,7 +56,9 @@ export default async function Header() {
             <DropdownMenuTrigger>
               <Avatar className="w-8 h-8 border rounded-full flex items-center justify-center">
                 <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
-                <AvatarFallback>A</AvatarFallback>
+                <AvatarFallback>
+                  {username.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
 
