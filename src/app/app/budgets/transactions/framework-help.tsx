@@ -19,12 +19,13 @@ export default async function FrameworkHelp() {
               A simple way to budget your money
             </CardDescription>
           </div>
+
           <div className="flex justify-evenly items-center gap-4">
             <BudgetCategory percentage={50} title="Essentials" />
             <BudgetCategory percentage={30} title="Lifestyle" />
             <BudgetCategory percentage={20} title="Investments" />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-6 lg:mt-0">
             The 50/30/20 budget rule is a simple way to budget your money. It
             suggests you divide your after-tax income into three categories: 50%
             for essential expenses, 30% for lifestyle expenses, and 20% for
