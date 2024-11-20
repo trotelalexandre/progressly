@@ -1,6 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { PiggyBank } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
@@ -10,7 +7,7 @@ import { fetchCategories } from "@/utils/db/budgets/categories";
 import { getCategoriesByType } from "@/utils/budgets/getCategoriesByType";
 import { getExpensesByCategory } from "@/utils/budgets/getExpensesByCategory";
 import { getTransactionsByCategory } from "@/utils/budgets/getTransactionsByCategory";
-import { getRemainingBudgetPercentage } from "@/utils/budgets/getRemainingBudgetPercentage";
+import { getBudgetPercentages } from "@/utils/budgets/getBudgetPercentages";
 import { getMostUsedCurrency } from "@/utils/budgets/getMostUsedCurrency";
 import BudgetOverview from "./budget-overview";
 
@@ -38,7 +35,7 @@ export default async function HomePage() {
   );
   const { totalIncome, totalExpense } =
     getTotalIncomeAndExpense(expensesByType);
-  const remainingBudgetPercentage = getRemainingBudgetPercentage(
+  const { usedBudgetPercentage } = getBudgetPercentages(
     totalIncome,
     totalExpense
   );
@@ -48,7 +45,7 @@ export default async function HomePage() {
       <BudgetOverview
         totalIncome={totalIncome}
         totalExpense={totalExpense}
-        remainingBudgetPercentage={remainingBudgetPercentage}
+        usedBudgetPercentage={usedBudgetPercentage}
         currency={currency}
       />
     </div>

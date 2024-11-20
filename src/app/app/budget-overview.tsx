@@ -5,14 +5,14 @@ import { PiggyBank } from "lucide-react";
 interface BudgetOverviewProps {
   totalIncome: number;
   totalExpense: number;
-  remainingBudgetPercentage: number;
+  usedBudgetPercentage: number;
   currency: string;
 }
 
 export default async function BudgetOverview({
   totalIncome,
   totalExpense,
-  remainingBudgetPercentage,
+  usedBudgetPercentage,
   currency,
 }: BudgetOverviewProps) {
   return (
@@ -23,12 +23,13 @@ export default async function BudgetOverview({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {totalExpense} {currency} / {totalIncome} {currency}
+          {totalExpense.toFixed(0)} {currency} / {totalIncome.toFixed(0)}{" "}
+          {currency}
         </div>
         <p className="text-xs text-muted-foreground">
-          {remainingBudgetPercentage}% of monthly budget used
+          {usedBudgetPercentage}% of monthly budget used
         </p>
-        <Progress value={remainingBudgetPercentage} className="mt-4" />
+        <Progress value={usedBudgetPercentage} className="mt-4" />
       </CardContent>
     </Card>
   );
