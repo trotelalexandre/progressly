@@ -1,5 +1,12 @@
 import { ExpensesByType } from "@/types/budget";
 
+/**
+ * Returns the percentage of the expenses by type.
+ *
+ * @param expensesByType The expenses by type.
+ * @param totalExpense The total expense.
+ * @returns The percentage of the expenses by type.
+ */
 export const getExpensePercentages = (
   expensesByType: ExpensesByType,
   totalExpense: number

@@ -1,6 +1,13 @@
 import { CategoriesByType, Transactions } from "@/types/budget";
 import { getTransactionsByType } from "./getTransactionsByType";
 
+/**
+ * Returns the expense transactions.
+ *
+ * @param transactions The transactions.
+ * @param categoriesByType The categories by type.
+ * @returns The expense transactions.
+ */
 export const getExpenseTransactions = (
   transactions: Transactions,
   categoriesByType: CategoriesByType

@@ -3,6 +3,13 @@ import lodash from "lodash";
 import { CategoriesByType, Transactions } from "@/types/budget";
 import { getExpenseTransactions } from "../getExpenseTransactions";
 
+/**
+ * Returns the chart data and trend for the spent chart.
+ *
+ * @param transactions The transactions.
+ * @param categoriesByType The categories by type.
+ * @returns The chart data and trend for the spent chart.
+ */
 export const getSpentChart = (
   transactions: Transactions,
   categoriesByType: CategoriesByType

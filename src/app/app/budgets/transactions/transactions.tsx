@@ -17,7 +17,7 @@ import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransact
 import { format } from "date-fns";
 
 export default async function Transactions({ userId }: { userId: string }) {
-  const transactions = await fetchThisMonthTransactions(userId);
+  const transactions = await fetchThisMonthTransactions.execute({ userId });
 
   if (!transactions || !transactions.length) {
     return (

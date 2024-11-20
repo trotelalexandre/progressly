@@ -2,6 +2,13 @@ import { ChartConfig } from "@/components/ui/chart";
 import { getCategoriesToExclude } from "../getCategoriesToExclude";
 import { CategoriesByType, ExpensesByCategory } from "@/types/budget";
 
+/**
+ * Returns the chart data and config for the categories chart.
+ *
+ * @param expensesByCategory The expenses by category.
+ * @param categoriesByType The categories by type.
+ * @returns The chart data and config for the categories chart.
+ */
 export const getCategoriesChart = (
   expensesByCategory: ExpensesByCategory,
   categoriesByType: CategoriesByType
