@@ -5,18 +5,22 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
-import { format } from "date-fns";
 
-export default async function Transactions({ userId }: { userId: string }) {
+import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
+import { DataTable } from "@/components/ui/data-table";
+import { getTransactionColumns } from "./transaction-columns";
+import { Categories } from "@/types/budget";
+import TransactionsTable from "./transactions-table";
+
+interface TransactionsProps {
+  userId: string;
+  categories: Categories;
+}
+
+export default async function Transactions({
+  userId,
+  categories,
+}: TransactionsProps) {
   const transactions = await fetchThisMonthTransactions.execute({ userId });
 
   if (!transactions || !transactions.length) {
@@ -44,28 +48,10 @@ export default async function Transactions({ userId }: { userId: string }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Currency</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions?.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell>
-                  {format(new Date(transaction.date), "PPP")}
-                </TableCell>
-                <TableCell>{transaction.category}</TableCell>
-                <TableCell>{transaction.amount}</TableCell>
-                <TableCell>{transaction.currency}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <TransactionsTable
+          categories={categories}
+          transactions={transactions}
+        />
       </CardContent>
     </Card>
   );

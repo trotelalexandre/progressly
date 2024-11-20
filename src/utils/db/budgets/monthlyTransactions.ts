@@ -10,6 +10,7 @@ export const fetchMonthlyTransactions = db.query.budget_transactions
       amount: true,
       currency: true,
       date: true,
+      note: true,
       is_archived: true,
     },
     where: and(

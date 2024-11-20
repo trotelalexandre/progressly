@@ -2,12 +2,20 @@
 import "client-only";
 
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectTrigger,
@@ -17,67 +25,68 @@ import {
   SelectGroup,
   SelectLabel,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { EditTranssactionFormSchema } from "../../../../../schema/budget.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "@/hooks/use-toast";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Calendar } from "@/components/ui/calendar";
+import { Categories, Transaction } from "@/types/budget";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { addTransaction } from "../../../../../actions/budget.action";
-import { AddTranssactionFormSchema } from "../../../../../schema/budget.schema";
-import { useState } from "react";
+import React, { useState } from "react";
 import { getCategoriesByType } from "@/utils/budgets/getCategoriesByType";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { z } from "zod";
+import { editTransaction } from "../../../../../actions/budget.action";
 
-type Categories = {
-  name: string;
-  type: string;
-}[];
-
-export default function AddTransaction({
-  categories,
-}: {
+interface EditTransactionProps {
+  transaction: Transaction;
+  open: boolean;
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   categories: Categories;
-}) {
+}
+
+export default function EditTransaction({
+  transaction,
+  open,
+  onOpenChange,
+  categories,
+}: EditTransactionProps) {
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof AddTranssactionFormSchema>>({
-    resolver: zodResolver(AddTranssactionFormSchema),
+  const form = useForm<z.infer<typeof EditTranssactionFormSchema>>({
+    resolver: zodResolver(EditTranssactionFormSchema),
     defaultValues: {
-      currency: "EUR",
-      date: new Date(),
+      id: transaction.id,
+      amount: Number(transaction.amount),
+      category: transaction.category,
+      currency: transaction.currency,
+      date: new Date(transaction.date),
+      note: transaction.note ?? undefined,
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof AddTranssactionFormSchema>) => {
+  const onSubmit = async (data: z.infer<typeof EditTranssactionFormSchema>) => {
     setLoading(true);
 
     try {
-      await addTransaction(data);
+      await editTransaction(data);
+      onOpenChange(false);
       toast({
-        title: "Transaction recorded!",
-        description: "Your transaction has been added to your budget.",
+        title: "Transaction edited!",
+        description: "Your transaction has been edited successfully.",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "An error occurred while adding the transaction.",
+        description: "An error occurred while editing the transaction.",
         variant: "destructive",
       });
     } finally {
@@ -88,12 +97,11 @@ export default function AddTransaction({
   const categoriesByType = getCategoriesByType(categories);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add Transaction</CardTitle>
-        <CardDescription>Record a new transaction</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit Transaction</DialogTitle>
+        </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -132,7 +140,7 @@ export default function AddTransaction({
                         onChange={(e) =>
                           field.onChange(
                             e.target.value === ""
-                              ? undefined
+                              ? null
                               : Number(e.target.value)
                           )
                         }
@@ -232,12 +240,12 @@ export default function AddTransaction({
               {loading ? (
                 <Loader2 className="animate-spin" />
               ) : (
-                "Add Transaction"
+                "Edit Transaction"
               )}
             </Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

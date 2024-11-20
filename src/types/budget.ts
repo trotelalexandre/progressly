@@ -21,6 +21,7 @@ export type Transaction = {
   id: number;
   amount: string;
   currency: string;
+  note: string | null;
   is_archived: boolean | null;
 };
 

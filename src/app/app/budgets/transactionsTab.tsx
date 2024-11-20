@@ -18,7 +18,7 @@ export default async function TransactionsTab({
         <AddTransaction categories={categories} />
         <FrameworkHelp />
       </div>
-      <Transactions userId={userId} />
+      <Transactions userId={userId} categories={categories} />
     </div>
   );
 }

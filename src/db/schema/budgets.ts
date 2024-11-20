@@ -75,6 +75,7 @@ export const budget_transactions = pgTable(
       .notNull()
       .references(() => currency.code, { onDelete: "cascade" }), // USD, EUR, etc
     date: timestamp("date", { withTimezone: true }).notNull().defaultNow(), // date of the transaction
+    note: text("note"), // note about the transaction
     is_archived: boolean("is_archived").default(false), // whether the transaction is archived
     ...timestamps,
   },
