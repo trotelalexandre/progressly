@@ -30,13 +30,13 @@ export default function IncomeVsExpenses({
           <div>
             <div className="text-sm font-medium">Income</div>
             <div className="text-3xl font-bold">
-              {totalIncome} {currency}
+              {totalIncome.toFixed(0)} {currency}
             </div>
           </div>
           <div>
             <div className="text-sm font-medium">Expense</div>
             <div className="text-3xl font-bold">
-              {totalExpense} {currency}
+              {totalExpense.toFixed(0)} {currency}
             </div>
           </div>
         </div>

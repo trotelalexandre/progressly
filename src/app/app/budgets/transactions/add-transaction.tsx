@@ -132,8 +132,14 @@ export default function AddTransaction({
                       <Input
                         type="number"
                         placeholder="Amount"
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        value={field.value}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === ""
+                              ? undefined
+                              : Number(e.target.value)
+                          )
+                        }
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                     <FormMessage />

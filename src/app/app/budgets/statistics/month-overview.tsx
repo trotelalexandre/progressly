@@ -32,7 +32,7 @@ export default function MonthOverview({
           <div className="flex flex-col">
             <span className="text-sm font-medium">Essential</span>
             <span className="text-3xl font-bold">
-              {expensesByType["essential"]} {currency}
+              {expensesByType["essential"].toFixed(0)} {currency}
             </span>
             <span className="text-sm text-muted-foreground">
               {essentialPercentage}%
@@ -41,7 +41,7 @@ export default function MonthOverview({
           <div className="flex flex-col">
             <span className="text-sm font-medium">Lifestyle</span>
             <span className="text-3xl font-bold">
-              {expensesByType["lifestyle"]} {currency}
+              {expensesByType["lifestyle"].toFixed(0)} {currency}
             </span>
             <span className="text-sm text-muted-foreground">
               {lifestylePercentage}%
@@ -50,7 +50,7 @@ export default function MonthOverview({
           <div className="flex flex-col">
             <span className="text-sm font-medium">Investment</span>
             <span className="text-3xl font-bold">
-              {expensesByType["investment"]} {currency}
+              {expensesByType["investment"].toFixed(0)} {currency}
             </span>
             <span className="text-sm text-muted-foreground">
               {investmentPercentage}%
