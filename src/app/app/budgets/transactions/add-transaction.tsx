@@ -26,7 +26,6 @@ import { toast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -40,7 +39,6 @@ import {
 import { cn } from "@/lib/utils";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import lodash from "lodash";
 import { addTransaction } from "../../../../../actions/budget";
 import { AddTranssactionFormSchema } from "../../../../../schema/budget.schema";
 import { useState } from "react";
@@ -52,10 +50,8 @@ type Categories = {
 }[];
 
 export default function AddTransaction({
-  userId,
   categories,
 }: {
-  userId: string;
   categories: Categories;
 }) {
   const [loading, setLoading] = useState(false);

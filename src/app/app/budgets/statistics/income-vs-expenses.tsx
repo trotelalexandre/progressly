@@ -14,7 +14,7 @@ interface IncomeVsExpensesProps {
   currency: string | undefined;
 }
 
-export default function IncomeVsExpenses({
+export default async function IncomeVsExpenses({
   totalIncome,
   totalExpense,
   currency = "EUR",

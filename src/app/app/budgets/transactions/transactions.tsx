@@ -13,11 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { db } from "@/db/db";
-import { budget_transactions } from "@/db/schema/budgets";
 import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
 import { format } from "date-fns";
-import { and, desc, eq } from "drizzle-orm";
 
 export default async function Transactions({ userId }: { userId: string }) {
   const transactions = await fetchThisMonthTransactions(userId);
@@ -27,7 +24,7 @@ export default async function Transactions({ userId }: { userId: string }) {
       <Card>
         <CardHeader>
           <CardTitle>Transactions</CardTitle>
-          <CardDescription>Recent transactions</CardDescription>
+          <CardDescription>0 transactions this month</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-1 h-48 items-center justify-center text-center">
           <p className="text-sm text-muted-foreground">
@@ -42,7 +39,9 @@ export default async function Transactions({ userId }: { userId: string }) {
     <Card>
       <CardHeader>
         <CardTitle>Transactions</CardTitle>
-        <CardDescription>Recent transactions</CardDescription>
+        <CardDescription>
+          {transactions.length} transactions this month
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Table>

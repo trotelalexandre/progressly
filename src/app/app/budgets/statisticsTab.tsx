@@ -19,7 +19,7 @@ interface StatisticsTabProps {
   categoriesByType: Dictionary<Categories>;
 }
 
-export default function StatisticsTab({
+export default async function StatisticsTab({
   transactions,
   totalIncome,
   totalExpense,

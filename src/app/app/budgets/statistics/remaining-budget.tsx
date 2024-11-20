@@ -17,7 +17,7 @@ interface RemainingBudgetProps {
   percentage: number;
 }
 
-export default function RemainingBudget({
+export default async function RemainingBudget({
   title,
   totalIncome,
   expense,

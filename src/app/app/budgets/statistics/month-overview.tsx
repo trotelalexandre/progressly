@@ -14,7 +14,7 @@ interface MonthOverviewProps {
   investmentPercentage: number;
 }
 
-export default function MonthOverview({
+export default async function MonthOverview({
   currency = "EUR",
   expensesByType,
   essentialPercentage,

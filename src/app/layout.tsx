@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import NextTopLoader from "nextjs-toploader";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
+          <NextTopLoader color="221.2 83.2% 53.3%" />
           {children}
 
           <Toaster />
