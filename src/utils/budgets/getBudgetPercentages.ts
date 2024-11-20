@@ -10,10 +10,10 @@ export const getBudgetPercentages = (
   totalExpense: number
 ) => {
   const remainingBudget = totalIncome - totalExpense;
-  const usedBudgetPercentage = Math.min(
-    100,
-    Math.floor((totalExpense / totalIncome) * 100)
-  );
+  const usedBudgetPercentage =
+    totalIncome > 0
+      ? Math.min(100, Math.floor((totalExpense / totalIncome) * 100))
+      : 0;
   const remainingBudgetPercentage =
     remainingBudget <= 0
       ? 0

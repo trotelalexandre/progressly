@@ -61,7 +61,7 @@ export const readings = pgTable(
       as: "permissive",
       to: authenticatedRole,
       for: "all",
-      using: sql`${table.user_id} = auth.uid()`,
+      using: sql`(${table.user_id} = (select auth.uid()))`,
     }),
   })
 );
