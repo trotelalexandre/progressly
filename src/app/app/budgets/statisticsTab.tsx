@@ -4,23 +4,10 @@ import SpentChart from "./statistics/charts/spent-chart";
 import IncomeVsExpenses from "./statistics/income-vs-expenses";
 import MonthOverview from "./statistics/month-overview";
 import RemainingBudget from "./statistics/remaining-budget";
-
-type Transaction = {
-  date: Date;
-  category: string;
-  id: number;
-  amount: string;
-  currency: string;
-  is_archived: boolean | null;
-};
-
-type Category = {
-  type: string;
-  name: string;
-};
+import { Categories, Transactions } from "@/types/budget";
 
 interface StatisticsTabProps {
-  transactions: Transaction[];
+  transactions: Transactions;
   totalIncome: number;
   totalExpense: number;
   currency: string;
@@ -29,7 +16,7 @@ interface StatisticsTabProps {
   essentialPercentage: number;
   lifestylePercentage: number;
   investmentPercentage: number;
-  categoriesByType: Dictionary<Category[]>;
+  categoriesByType: Dictionary<Categories>;
 }
 
 export default function StatisticsTab({

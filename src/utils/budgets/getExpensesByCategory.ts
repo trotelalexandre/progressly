@@ -1,14 +1,5 @@
+import { TransactionsByCategories } from "@/types/budget";
 import lodash from "lodash";
-
-type Transaction = {
-  category: string;
-  date: Date;
-  id: number;
-  amount: string;
-  currency: string;
-  is_archived: boolean | null;
-};
-type TransactionsByCategories = lodash.Dictionary<Transaction[]>;
 
 export const getExpensesByCategory = (
   transactionsByCategories: TransactionsByCategories

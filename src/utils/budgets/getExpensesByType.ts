@@ -1,14 +1,5 @@
-import lodash, { Dictionary } from "lodash";
-
-type Category = {
-  type: string;
-  name: string;
-};
-type CategoriesByType = Dictionary<Category[]>;
-
-type ExpensesByCategory = {
-  [x: string]: number;
-};
+import { CategoriesByType, ExpensesByCategory } from "@/types/budget";
+import lodash from "lodash";
 
 export const getExpensesByType = (
   categoriesByType: CategoriesByType,

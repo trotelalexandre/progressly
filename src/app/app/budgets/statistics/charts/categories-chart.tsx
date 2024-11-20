@@ -17,15 +17,11 @@ import {
 } from "@/components/ui/card";
 import { getCategoriesChart } from "@/utils/budgets/charts/getCategoriesChart";
 import { Dictionary } from "lodash";
-
-type Category = {
-  type: string;
-  name: string;
-};
+import { Categories } from "@/types/budget";
 
 interface CategoriesChartProps {
   expensesByCategory: { [key: string]: number };
-  categoriesByType: Dictionary<Category[]>;
+  categoriesByType: Dictionary<Categories>;
 }
 
 export default function CategoriesChart({

@@ -1,36 +1,16 @@
 import { eachDayOfInterval, format } from "date-fns";
 import lodash from "lodash";
-import { getTransactionsByType } from "../getTransactionsByType";
-
-type Transaction = {
-  date: Date;
-  category: string;
-  id: number;
-  amount: string;
-  currency: string;
-  is_archived: boolean | null;
-};
-
-type Category = {
-  type: string;
-  name: string;
-};
-
-type CategoriesByType = lodash.Dictionary<Category[]>;
+import { CategoriesByType, Transactions } from "@/types/budget";
+import { getExpenseTransactions } from "../getExpenseTransactions";
 
 export const getSpentChart = (
-  transactions: Transaction[],
+  transactions: Transactions,
   categoriesByType: CategoriesByType
 ) => {
-  const transactionsByType = getTransactionsByType(
+  const expenseTransactions = getExpenseTransactions(
     transactions,
     categoriesByType
   );
-
-  delete transactionsByType["income"];
-  delete transactionsByType["investment"];
-
-  const expenseTransactions = Object.values(transactionsByType).flat();
 
   const allDates = eachDayOfInterval({
     start: new Date(

@@ -20,6 +20,7 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import { getSpentChart } from "@/utils/budgets/charts/getSpentChart";
 import { getUniqueTransactionsDaysCount } from "@/utils/budgets/getUniqueTransactionsDaysCount";
 import { Dictionary } from "lodash";
+import { Categories, Transactions } from "@/types/budget";
 
 const chartConfig = {
   spent: {
@@ -28,23 +29,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-type Transaction = {
-  date: Date;
-  category: string;
-  id: number;
-  amount: string;
-  currency: string;
-  is_archived: boolean | null;
-};
-
-type Category = {
-  type: string;
-  name: string;
-};
-
 interface SpentChartProps {
-  transactions: Transaction[];
-  categoriesByType: Dictionary<Category[]>;
+  transactions: Transactions;
+  categoriesByType: Dictionary<Categories>;
 }
 
 export default function SpentChart({

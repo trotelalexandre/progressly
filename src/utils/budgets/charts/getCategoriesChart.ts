@@ -1,21 +1,12 @@
 import { ChartConfig } from "@/components/ui/chart";
-import { Dictionary } from "lodash";
-
-type Category = {
-  type: string;
-  name: string;
-};
-
-type ExpensesByCategory = { [key: string]: number };
-type CategoriesByType = Dictionary<Category[]>;
+import { getCategoriesToExclude } from "../getCategoriesToExclude";
+import { CategoriesByType, ExpensesByCategory } from "@/types/budget";
 
 export const getCategoriesChart = (
   expensesByCategory: ExpensesByCategory,
   categoriesByType: CategoriesByType
 ) => {
-  const categoriesToExclude = categoriesByType["income"]
-    .concat(categoriesByType["investment"])
-    .map((category) => category.name);
+  const categoriesToExclude = getCategoriesToExclude(categoriesByType);
 
   const chartData = Object.keys(expensesByCategory)
     .filter((category) => !categoriesToExclude.includes(category))

@@ -1,15 +1,7 @@
+import { Transactions } from "@/types/budget";
 import lodash from "lodash";
 
-type Transaction = {
-  date: Date;
-  category: string;
-  id: number;
-  amount: string;
-  currency: string;
-  is_archived: boolean | null;
-};
-
-export const getUniqueTransactionsDaysCount = (transactions: Transaction[]) => {
+export const getUniqueTransactionsDaysCount = (transactions: Transactions) => {
   const uniqueTransactionDaysCount = lodash.uniq(
     transactions.map((transaction) => new Date(transaction.date).getDate())
   ).length;

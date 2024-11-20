@@ -1,6 +1,4 @@
-type ExpensesByType = {
-  [x: string]: number;
-};
+import { ExpensesByType } from "@/types/budget";
 
 export const getTotalIncomeAndExpense = (expensesByType: ExpensesByType) => {
   const totalIncome = expensesByType["income"] ?? 0;

@@ -1,14 +1,10 @@
+import { Categories } from "@/types/budget";
 import AddTransaction from "./transactions/add-transaction";
 import Transactions from "./transactions/transactions";
 
-type Category = {
-  name: string;
-  type: string;
-};
-
 interface TransactionsTabProps {
   userId: string;
-  categories: Category[];
+  categories: Categories;
 }
 
 export default function TransactionsTab({

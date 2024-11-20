@@ -1,23 +1,8 @@
+import { CategoriesByType, Transactions } from "@/types/budget";
 import lodash from "lodash";
 
-type Transaction = {
-  date: Date;
-  category: string;
-  id: number;
-  amount: string;
-  currency: string;
-  is_archived: boolean | null;
-};
-
-type Category = {
-  type: string;
-  name: string;
-};
-
-type CategoriesByType = lodash.Dictionary<Category[]>;
-
 export const getTransactionsByType = (
-  transactions: Transaction[],
+  transactions: Transactions,
   categoriesByType: CategoriesByType
 ) => {
   const transactionsByType = lodash.mapValues(categoriesByType, (categories) =>
@@ -27,8 +12,6 @@ export const getTransactionsByType = (
       )
     )
   );
-
-  console.log("transactionsByType", transactionsByType);
 
   return transactionsByType;
 };
