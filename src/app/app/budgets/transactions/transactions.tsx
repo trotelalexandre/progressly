@@ -15,26 +15,12 @@ import {
 } from "@/components/ui/table";
 import { db } from "@/db/db";
 import { budget_transactions } from "@/db/schema/budgets";
+import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
 import { format } from "date-fns";
 import { and, desc, eq } from "drizzle-orm";
 
 export default async function Transactions({ userId }: { userId: string }) {
-  const transactions = await db.query.budget_transactions.findMany({
-    columns: {
-      id: true,
-      category: true,
-      amount: true,
-      currency: true,
-      date: true,
-      is_archived: true,
-    },
-    where: and(
-      eq(budget_transactions.user_id, userId),
-      eq(budget_transactions.is_archived, false)
-    ),
-    orderBy: [desc(budget_transactions.date)],
-    limit: 4,
-  });
+  const transactions = await fetchThisMonthTransactions(userId);
 
   if (!transactions || !transactions.length) {
     return (
