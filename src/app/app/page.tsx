@@ -1,8 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BarChart, BookOpen, DollarSign, TrendingUp } from "lucide-react";
+import { PiggyBank } from "lucide-react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
+import { getTotalIncomeAndExpense } from "@/utils/budgets/getTotalIncomeAndExpense";
+import { getExpensesByType } from "@/utils/budgets/getExpensesByType";
+import { fetchCategories } from "@/utils/db/budgets/categories";
+import { getCategoriesByType } from "@/utils/budgets/getCategoriesByType";
+import { getExpensesByCategory } from "@/utils/budgets/getExpensesByCategory";
+import { getTransactionsByCategory } from "@/utils/budgets/getTransactionsByCategory";
+import { getRemainingBudgetPercentage } from "@/utils/budgets/getRemainingBudgetPercentage";
+import { getMostUsedCurrency } from "@/utils/budgets/getMostUsedCurrency";
+import BudgetOverview from "./budget-overview";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -15,60 +25,32 @@ export default async function HomePage() {
     redirect("/auth/signin");
   }
 
+  const userId = user.id;
+  const transactions = await fetchThisMonthTransactions(userId);
+  const currency = getMostUsedCurrency(transactions);
+  const categories = await fetchCategories();
+  const categoriesByType = getCategoriesByType(categories);
+  const transactionsByCategory = getTransactionsByCategory(transactions);
+  const expensesByCategory = getExpensesByCategory(transactionsByCategory);
+  const expensesByType = getExpensesByType(
+    categoriesByType,
+    expensesByCategory
+  );
+  const { totalIncome, totalExpense } =
+    getTotalIncomeAndExpense(expensesByType);
+  const remainingBudgetPercentage = getRemainingBudgetPercentage(
+    totalIncome,
+    totalExpense
+  );
+
   return (
     <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Habit Streak</CardTitle>
-          <BarChart className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">7 days</div>
-          <p className="text-xs text-muted-foreground">+2 from last week</p>
-          <Progress value={70} className="mt-2" />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Budget Overview</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">$1,234 / $2,000</div>
-          <p className="text-xs text-muted-foreground">
-            61% of monthly budget used
-          </p>
-          <Progress value={61} className="mt-2" />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Investment Growth
-          </CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">+8.2%</div>
-          <p className="text-xs text-muted-foreground">+2.1% from last month</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Reading Progress
-          </CardTitle>
-          <BookOpen className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">3 of 5 books</div>
-          <p className="text-xs text-muted-foreground">60% of yearly goal</p>
-          <Progress value={60} className="mt-2" />
-        </CardContent>
-      </Card>
+      <BudgetOverview
+        totalIncome={totalIncome}
+        totalExpense={totalExpense}
+        remainingBudgetPercentage={remainingBudgetPercentage}
+        currency={currency}
+      />
     </div>
   );
 }

@@ -18,7 +18,7 @@ import { redirect } from "next/navigation";
 
 const items = [
   {
-    title: "My dashboard",
+    title: "Dashboard",
     url: "/app",
     icon: Home,
   },

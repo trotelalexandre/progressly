@@ -6,6 +6,14 @@ export const getExpensePercentages = (
   expensesByType: ExpensesByType,
   totalExpense: number
 ) => {
+  if (!totalExpense) {
+    return {
+      essentialPercentage: 0,
+      lifestylePercentage: 0,
+      investmentPercentage: 0,
+    };
+  }
+
   const essentialPercentage = Math.floor(
     (expensesByType["essential"] / totalExpense) * 100
   );
