@@ -23,9 +23,9 @@ export default async function HomePage() {
   }
 
   const userId = user.id;
-  const transactions = await fetchThisMonthTransactions(userId);
+  const transactions = await fetchThisMonthTransactions.execute({ userId });
   const currency = getMostUsedCurrency(transactions);
-  const categories = await fetchCategories();
+  const categories = await fetchCategories.execute();
   const categoriesByType = getCategoriesByType(categories);
   const transactionsByCategory = getTransactionsByCategory(transactions);
   const expensesByCategory = getExpensesByCategory(transactionsByCategory);

@@ -26,8 +26,8 @@ export default async function BudgetsPage() {
 
   const userId = user.id;
 
-  const categories = await fetchCategories();
-  const transactions = await fetchThisMonthTransactions(userId);
+  const categories = await fetchCategories.execute();
+  const transactions = await fetchThisMonthTransactions.execute({ userId });
   const currency = await getMostUsedCurrency(transactions);
   const categoriesByType = getCategoriesByType(categories);
   const transactionsByCategory = getTransactionsByCategory(transactions);
