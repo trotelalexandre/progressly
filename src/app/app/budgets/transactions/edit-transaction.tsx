@@ -40,14 +40,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getCategoriesByType } from "@/utils/budgets/getCategoriesByType";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { editTransaction } from "../../../../../actions/budget.action";
 
 interface EditTransactionProps {
-  transaction: Transaction;
+  transaction: Transaction | null;
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   categories: Categories;
@@ -60,18 +60,42 @@ export default function EditTransaction({
   categories,
 }: EditTransactionProps) {
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setMounted(false);
+    }
+  }, [open]);
 
   const form = useForm<z.infer<typeof EditTranssactionFormSchema>>({
     resolver: zodResolver(EditTranssactionFormSchema),
     defaultValues: {
-      id: transaction.id,
-      amount: Number(transaction.amount),
-      category: transaction.category,
-      currency: transaction.currency,
-      date: new Date(transaction.date),
-      note: transaction.note ?? undefined,
+      id: undefined,
+      amount: undefined,
+      category: "Rent",
+      currency: "EUR",
+      date: new Date(),
+      note: "",
     },
   });
+
+  const { reset } = form;
+
+  useEffect(() => {
+    if (transaction && !mounted) {
+      reset({
+        id: transaction.id,
+        amount: Number(transaction.amount) ?? undefined,
+        category: transaction.category,
+        currency: transaction.currency,
+        date: new Date(transaction.date),
+        note: transaction.note ?? "",
+      });
+
+      setMounted(true);
+    }
+  }, [transaction, reset]);
 
   const onSubmit = async (data: z.infer<typeof EditTranssactionFormSchema>) => {
     setLoading(true);

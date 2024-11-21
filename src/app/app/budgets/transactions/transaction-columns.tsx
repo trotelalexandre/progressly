@@ -15,10 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteTransaction } from "../../../../../actions/budget.action";
-import { useState } from "react";
+import React, { MutableRefObject, SetStateAction } from "react";
 import EditTransaction from "./edit-transaction";
 
-export const getTransactionColumns = (categories: Categories) => {
+export const getTransactionColumns = (
+  categories: Categories,
+  handleEditClick: (transaction: Transaction) => void
+) => {
   const transactionColumns: ColumnDef<Transaction>[] = [
     {
       accessorKey: "date",
@@ -66,45 +69,33 @@ export const getTransactionColumns = (categories: Categories) => {
     {
       id: "actions",
       cell: ({ row }) => {
-        const [openEditTransactionDialog, setOpenEditTransactionDialog] =
-          useState(false);
-
         const transaction = row.original;
 
         return (
-          <>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => setOpenEditTransactionDialog(true)}
-                >
-                  Edit the transaction
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive cursor-pointer"
-                  onClick={() => deleteTransaction(transaction.id)}
-                >
-                  Delete the transaction
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <EditTransaction
-              transaction={transaction}
-              open={openEditTransactionDialog}
-              onOpenChange={setOpenEditTransactionDialog}
-              categories={categories}
-            />
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEditClick(transaction)}
+              >
+                Edit the transaction
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive cursor-pointer"
+                onClick={() => deleteTransaction(transaction.id)}
+              >
+                Delete the transaction
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
