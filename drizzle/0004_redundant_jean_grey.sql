@@ -1,0 +1,1 @@
+ALTER TABLE "budget_transactions" ADD COLUMN "note" text;

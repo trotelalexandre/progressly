@@ -1,0 +1,1 @@
+ALTER TABLE "budget_transactions" ALTER COLUMN "date" SET NOT NULL;

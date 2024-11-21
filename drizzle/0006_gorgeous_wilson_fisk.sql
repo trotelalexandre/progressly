@@ -1,0 +1,1 @@
+ALTER POLICY "authenticated users can manage their own readings" ON "readings" TO authenticated USING ("readings"."user_id" = (select auth.uid()));
