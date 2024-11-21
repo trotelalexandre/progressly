@@ -11,6 +11,16 @@ describe("getCategoriesToExclude", () => {
     expect(result).toEqual(["Secondary", "Primary", "Savings"]);
   });
 
+  it("should return one category if there is only one income category", () => {
+    const mockCategoriesByType = {
+      income: [{ name: "Savings", type: "income" }],
+    };
+
+    const result = getCategoriesToExclude(mockCategoriesByType);
+
+    expect(result).toEqual(["Savings"]);
+  });
+
   it("should return empty array if there are not income and investment categories", () => {
     const mockCategoriesByType = {
       essential: [{ name: "Groceries", type: "essential" }],

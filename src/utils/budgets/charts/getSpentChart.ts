@@ -44,17 +44,12 @@ export const getSpentChart = (
     };
   });
 
-  const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd");
-  const today = format(new Date(), "yyyy-MM-dd");
-
-  const spentToday = chartData.find((data) => data.day === today)?.spent;
-  const spentYesterday = chartData.find(
-    (data) => data.day === yesterday
-  )?.spent;
+  const spentToday = chartData[chartData.length - 1]?.spent;
+  const spentYesterday = chartData[chartData.length - 2]?.spent;
 
   const trend =
     spentToday && spentYesterday
-      ? (spentToday - spentYesterday) / spentYesterday
+      ? ((spentToday - spentYesterday) / spentYesterday) * 100
       : 0;
 
   return { chartData, trend };

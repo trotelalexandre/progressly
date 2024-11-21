@@ -8,11 +8,16 @@ import lodash from "lodash";
  * @returns The most used currency.
  */
 export const getMostUsedCurrency = (transactions: Transactions) => {
-  const currencyCount = lodash.countBy(transactions, "currency");
-  const currency = lodash.maxBy(
-    Object.keys(currencyCount),
-    (currency) => currencyCount[currency]
-  );
+  if (!transactions.some((transaction) => transaction.currency)) {
+    return "EUR";
+  }
 
-  return currency ?? "EUR";
+  const currencyCount = lodash.countBy(transactions, "currency");
+  const currency =
+    lodash.maxBy(
+      Object.keys(currencyCount),
+      (currency) => currencyCount[currency]
+    ) ?? "EUR";
+
+  return currency;
 };

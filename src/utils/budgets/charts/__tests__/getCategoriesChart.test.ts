@@ -1,135 +1,126 @@
-import { CategoriesByType, Transactions } from "@/types/budget";
 import { getCategoriesChart } from "../getCategoriesChart";
+import {
+  mockCategoriesByType,
+  mockExpensesByCategory,
+} from "../../../../../__mocks__/budget.mocks";
 
 describe("getCategoriesChart", () => {
-  beforeEach(() => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  const mockTransactions: Transactions = [
-    {
-      id: 1,
-      date: new Date("2021-01-01"),
-      amount: "10",
-      category: "Groceries",
-      currency: "EUR",
-      note: null,
-      is_archived: false,
-    },
-    {
-      id: 2,
-      date: new Date("2021-01-02"),
-      amount: "20",
-      category: "Primary",
-      currency: "EUR",
-      note: null,
-      is_archived: false,
-    },
-    {
-      id: 3,
-      date: new Date("2021-01-03"),
-      amount: "30",
-      category: "Rent",
-      currency: "EUR",
-      note: null,
-      is_archived: false,
-    },
-    {
-      id: 4,
-      date: new Date("2021-01-04"),
-      amount: "40",
-      category: "Utilities",
-      currency: "EUR",
-      note: null,
-      is_archived: false,
-    },
-    {
-      id: 5,
-      date: new Date("2021-01-05"),
-      amount: "50",
-      category: "Nightclub",
-      currency: "EUR",
-      note: null,
-      is_archived: false,
-    },
-  ];
-
-  const mockCategoriesByType: CategoriesByType = {
-    essential: [
-      {
-        name: "Groceries",
-        type: "essential",
-      },
-      {
-        name: "Rent",
-        type: "essential",
-      },
-      {
-        name: "Utilities",
-        type: "essential",
-      },
-    ],
-    income: [
-      {
-        name: "Primary",
-        type: "income",
-      },
-    ],
-    lifestyle: [
-      {
-        name: "Nightclub",
-        type: "lifestyle",
-      },
-    ],
-  };
-
   it("should return correct chart data and config for valid input", () => {
-    // Placeholder for valid input test
-  });
+    const result = getCategoriesChart(
+      mockExpensesByCategory,
+      mockCategoriesByType
+    );
 
-  it("should exclude categories returned by getCategoriesToExclude", () => {
-    // Placeholder for exclusion test
+    expect(result.chartData).toEqual([
+      {
+        category: "Groceries",
+        spent: 100,
+        fill: "hsl(var(--chart-1))",
+        label: "Groceries",
+      },
+    ]);
   });
 
   it("should sort categories by expenses in descending order", () => {
-    // Placeholder for sorting test
+    const expensesByCategory = {
+      Groceries: 100,
+      Rent: 200,
+      Secondary: 500,
+    };
+
+    const result = getCategoriesChart(expensesByCategory, mockCategoriesByType);
+
+    expect(result.chartData).toEqual([
+      {
+        category: "Rent",
+        spent: 200,
+        fill: "hsl(var(--chart-1))",
+        label: "Rent",
+      },
+      {
+        category: "Groceries",
+        spent: 100,
+        fill: "hsl(var(--chart-2))",
+        label: "Groceries",
+      },
+    ]);
   });
 
   it("should limit chart data to top 5 categories", () => {
-    // Placeholder for limiting test
+    const expensesByCategory = {
+      Groceries: 100,
+      Rent: 200,
+      Secondary: 500,
+      Savings: 400,
+      Utilities: 300,
+      Food: 600,
+      Transportation: 700,
+      Health: 800,
+      Entertainment: 900,
+      Clothing: 1000,
+    };
+
+    const result = getCategoriesChart(expensesByCategory, mockCategoriesByType);
+
+    expect(result.chartData).toHaveLength(5);
   });
 
   it("should capitalize category labels", () => {
-    // Placeholder for capitalization test
+    const result = getCategoriesChart(
+      mockExpensesByCategory,
+      mockCategoriesByType
+    );
+
+    expect(result.chartData[0].label).toEqual("Groceries");
   });
 
   it("should assign colors dynamically based on index", () => {
-    // Placeholder for color assignment test
+    const expensesByCategory = {
+      Groceries: 100,
+      Rent: 200,
+      Secondary: 500,
+    };
+
+    const result = getCategoriesChart(expensesByCategory, mockCategoriesByType);
+
+    expect(result.chartData[0].fill).toEqual("hsl(var(--chart-1))");
+    expect(result.chartData[1].fill).toEqual("hsl(var(--chart-2))");
   });
 
-  // Edge Cases
   it("should handle empty expensesByCategory input", () => {
-    // Placeholder for handling empty input
+    const result = getCategoriesChart({}, mockCategoriesByType);
+
+    expect(result.chartData).toEqual([]);
   });
 
   it("should handle empty categoriesByType input", () => {
-    // Placeholder for handling empty categories input
+    const result = getCategoriesChart(mockExpensesByCategory, {});
+
+    expect(result.chartData).toEqual([]);
   });
 
   it("should handle all categories being excluded", () => {
-    // Placeholder for handling all excluded categories
+    const expensesByCategory = {
+      Secondary: 500,
+    };
+
+    const categoriesByType = {
+      income: [{ name: "Secondary", type: "income" }],
+    };
+
+    const result = getCategoriesChart(expensesByCategory, categoriesByType);
+
+    expect(result.chartData).toEqual([]);
   });
 
   it("should handle identical expense values across categories", () => {
-    // Placeholder for identical values test
-  });
+    const expensesByCategory = {
+      Groceries: 100,
+      Rent: 100,
+    };
 
-  it("should handle special characters in category names", () => {
-    // Placeholder for special character handling
+    const result = getCategoriesChart(expensesByCategory, mockCategoriesByType);
+
+    expect(result.chartData).toHaveLength(2);
   });
 });

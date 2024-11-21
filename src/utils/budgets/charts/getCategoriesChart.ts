@@ -13,6 +13,15 @@ export const getCategoriesChart = (
   expensesByCategory: ExpensesByCategory,
   categoriesByType: CategoriesByType
 ) => {
+  if (
+    !expensesByCategory ||
+    !categoriesByType ||
+    !Object.keys(expensesByCategory).length ||
+    !Object.keys(categoriesByType).length
+  ) {
+    return { chartData: [], chartConfig: {} };
+  }
+
   const categoriesToExclude = getCategoriesToExclude(categoriesByType);
 
   const chartData = Object.keys(expensesByCategory)

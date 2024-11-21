@@ -1,14 +1,6 @@
 import { getBudgetPercentages } from "../getBudgetPercentages";
 
 describe("getBudgetPercentages", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("should return correct percentages for valid input", () => {
     const mockTotalIncome = 1000;
     const mockTotalExpense = 500;

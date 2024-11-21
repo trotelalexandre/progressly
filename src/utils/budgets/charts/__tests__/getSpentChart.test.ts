@@ -1,48 +1,164 @@
 import { getSpentChart } from "../getSpentChart";
+import { eachDayOfInterval, format } from "date-fns";
+import lodash from "lodash";
+import { getExpenseTransactions } from "../../getExpenseTransactions";
+import { Transactions } from "@/types/budget";
+import {
+  mockTransactions,
+  mockCategoriesByType,
+} from "../../../../../__mocks__/budget.mocks";
+
+jest.mock("date-fns", () => ({
+  eachDayOfInterval: jest.fn(),
+  format: jest.fn(),
+}));
+
+jest.mock("lodash", () => ({
+  groupBy: jest.fn(),
+}));
+
+jest.mock("../../getExpenseTransactions", () => ({
+  getExpenseTransactions: jest.fn(),
+}));
 
 describe("getSpentChart", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should return correct chart data and trend for valid input", () => {
-    // Placeholder for basic functionality test
+    (eachDayOfInterval as jest.Mock).mockReturnValue([
+      new Date("2021-01-01"),
+      new Date("2021-01-02"),
+    ]);
+    (format as jest.Mock).mockImplementation(
+      (date) => date.toISOString().split("T")[0]
+    );
+    (lodash.groupBy as jest.Mock).mockReturnValue({
+      "2021-01-01": [mockTransactions[0]],
+      "2021-01-02": [mockTransactions[1]],
+    });
+    (getExpenseTransactions as jest.Mock).mockReturnValue(mockTransactions);
+
+    const { chartData, trend } = getSpentChart(
+      mockTransactions,
+      mockCategoriesByType
+    );
+
+    expect(chartData).toHaveLength(2);
+    expect(chartData[0].day).toBe("2021-01-01");
+    expect(chartData[0].spent).toBe(100);
+    expect(chartData[1].day).toBe("2021-01-02");
+    expect(chartData[1].spent).toBe(200);
+    expect(trend).toBe(100);
   });
 
-  it("should group transactions by day", () => {
-    // Placeholder for grouping test
-  });
-
-  it("should calculate daily spending correctly", () => {
-    // Placeholder for spending calculation test
-  });
-
-  it("should generate date intervals from the earliest transaction to today", () => {
-    // Placeholder for date interval test
-  });
-
-  it("should calculate trend based on today's and yesterday's spending", () => {
-    // Placeholder for trend calculation test
-  });
-
-  // Edge Cases
   it("should handle empty transactions input", () => {
-    // Placeholder for empty transactions test
+    (eachDayOfInterval as jest.Mock).mockReturnValue([]);
+    (format as jest.Mock).mockReturnValue("2021-01-01");
+    (lodash.groupBy as jest.Mock).mockReturnValue({});
+    (getExpenseTransactions as jest.Mock).mockReturnValue([]);
+
+    const { chartData, trend } = getSpentChart([], mockCategoriesByType);
+
+    expect(chartData).toHaveLength(0);
+    expect(trend).toBe(0);
   });
 
   it("should handle no expense transactions in input", () => {
-    // Placeholder for no expenses test
+    (eachDayOfInterval as jest.Mock).mockReturnValue([]);
+    (format as jest.Mock).mockReturnValue("2021-01-01");
+    (lodash.groupBy as jest.Mock).mockReturnValue({});
+    (getExpenseTransactions as jest.Mock).mockReturnValue([]);
+
+    const { chartData, trend } = getSpentChart([], mockCategoriesByType);
+
+    expect(chartData).toHaveLength(0);
+    expect(trend).toBe(0);
   });
 
   it("should include days with no transactions in chart data", () => {
-    // Placeholder for no transaction days test
-  });
+    (eachDayOfInterval as jest.Mock).mockReturnValue([
+      new Date("2021-01-01"),
+      new Date("2021-01-02"),
+    ]);
+    (format as jest.Mock).mockImplementation(
+      (date) => date.toISOString().split("T")[0]
+    );
+    (lodash.groupBy as jest.Mock).mockReturnValue({
+      "2021-01-01": [mockTransactions[0]],
+    });
+    (getExpenseTransactions as jest.Mock).mockReturnValue(mockTransactions);
 
-  it("should handle transactions with invalid or malformed dates", () => {
-    // Placeholder for invalid date handling
+    const { chartData, trend } = getSpentChart(
+      mockTransactions,
+      mockCategoriesByType
+    );
+
+    expect(chartData).toHaveLength(2);
+    expect(chartData[0].day).toBe("2021-01-01");
+    expect(chartData[0].spent).toBe(100);
+    expect(chartData[1].day).toBe("2021-01-02");
+    expect(chartData[1].spent).toBe(0);
+    expect(trend).toBe(0);
   });
 
   it("should handle zero spending for yesterday when calculating trend", () => {
-    // Placeholder for zero spending test
+    (eachDayOfInterval as jest.Mock).mockReturnValue([
+      new Date("2021-01-01"),
+      new Date("2021-01-02"),
+    ]);
+    (format as jest.Mock).mockImplementation(
+      (date) => date.toISOString().split("T")[0]
+    );
+    (lodash.groupBy as jest.Mock).mockReturnValue({
+      "2021-01-01": [],
+      "2021-01-02": [mockTransactions[1]],
+    });
+    (getExpenseTransactions as jest.Mock).mockReturnValue(mockTransactions);
+
+    const { chartData, trend } = getSpentChart(
+      mockTransactions,
+      mockCategoriesByType
+    );
+
+    expect(chartData).toHaveLength(2);
+    expect(chartData[0].day).toBe("2021-01-01");
+    expect(chartData[0].spent).toBe(0);
+    expect(chartData[1].day).toBe("2021-01-02");
+    expect(chartData[1].spent).toBe(200);
+    expect(trend).toBe(0);
   });
 
   it("should handle negative spending values", () => {
-    // Placeholder for negative spending test
+    const negativeTransactions: Transactions = [
+      {
+        date: new Date("2021-01-01"),
+        amount: "-100",
+        category: "food",
+        id: 1,
+        currency: "USD",
+        note: "food",
+        is_archived: false,
+      },
+    ];
+    (eachDayOfInterval as jest.Mock).mockReturnValue([new Date("2021-01-01")]);
+    (format as jest.Mock).mockImplementation(
+      (date) => date.toISOString().split("T")[0]
+    );
+    (lodash.groupBy as jest.Mock).mockReturnValue({
+      "2021-01-01": negativeTransactions,
+    });
+    (getExpenseTransactions as jest.Mock).mockReturnValue(negativeTransactions);
+
+    const { chartData, trend } = getSpentChart(
+      negativeTransactions,
+      mockCategoriesByType
+    );
+
+    expect(chartData).toHaveLength(1);
+    expect(chartData[0].day).toBe("2021-01-01");
+    expect(chartData[0].spent).toBe(-100);
+    expect(trend).toBe(0);
   });
 });

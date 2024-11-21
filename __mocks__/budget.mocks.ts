@@ -29,6 +29,7 @@ export const mockExpensesByType: ExpensesByType = {
   essential: 100,
   investment: 200,
   lifestyle: 300,
+  income: 400,
 };
 
 export const mockTotalExpense: number = 600;
@@ -84,3 +85,42 @@ export const mockExpensesByCategory: ExpensesByCategory = {
   Savings: 400,
   Secondary: 500,
 };
+
+export const mockTransactions = [
+  {
+    amount: "100",
+    category: "Groceries",
+    currency: "USD",
+    date: new Date("2021-01-01"),
+    id: 1,
+    is_archived: false,
+    note: "Groceries",
+  },
+  {
+    amount: "200",
+    category: "Rent",
+    currency: "USD",
+    date: new Date("2021-01-02"),
+    id: 2,
+    is_archived: false,
+    note: "Rent",
+  },
+  {
+    amount: "200",
+    category: "Rent",
+    currency: "USD",
+    date: new Date("2021-01-01"),
+    id: 3,
+    is_archived: false,
+    note: "Rent",
+  },
+  {
+    amount: "500",
+    category: "Secondary",
+    currency: "USD",
+    date: new Date("2021-01-01"),
+    id: 4,
+    is_archived: false,
+    note: "Secondary",
+  },
+];
