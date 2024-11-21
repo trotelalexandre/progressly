@@ -95,7 +95,7 @@ export default function EditTransaction({
 
       setMounted(true);
     }
-  }, [transaction, reset]);
+  }, [transaction, reset, mounted]);
 
   const onSubmit = async (data: z.infer<typeof EditTranssactionFormSchema>) => {
     setLoading(true);
