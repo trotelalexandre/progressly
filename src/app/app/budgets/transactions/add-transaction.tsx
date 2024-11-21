@@ -74,6 +74,7 @@ export default function AddTransaction({
         title: "Transaction recorded!",
         description: "Your transaction has been added to your budget.",
       });
+      form.reset();
     } catch (error) {
       toast({
         title: "Error",
