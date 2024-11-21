@@ -15,8 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteTransaction } from "../../../../../actions/budget.action";
-import React, { MutableRefObject, SetStateAction } from "react";
-import EditTransaction from "./edit-transaction";
+import React from "react";
 
 export const getTransactionColumns = (
   categories: Categories,
@@ -90,7 +89,7 @@ export const getTransactionColumns = (
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive cursor-pointer"
-                onClick={() => deleteTransaction(transaction.id)}
+                onClick={async () => await deleteTransaction(transaction.id)}
               >
                 Delete the transaction
               </DropdownMenuItem>

@@ -92,8 +92,8 @@ export default function SpentChart({
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending {trend > 0 ? "up" : "down"} by {Math.abs(Math.round(trend))}%{" "}
-          today compared to yesterday{" "}
+          This is {Math.abs(Math.round(trend))}% {trend > 0 ? "more" : "less"}{" "}
+          spent compared to yesterday
           {trend > 0 ? (
             <TrendingUp className="w-4 h-4" />
           ) : (
