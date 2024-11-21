@@ -14,6 +14,30 @@ interface RootLayoutProps {
 export const metadata: Metadata = {
   title: "Progressly",
   description: "A progress tracker for your goals",
+  applicationName: "Progressly",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Progressly",
+  },
+  keywords: ["progress", "tracker", "goals"],
+  authors: [{ name: "Alexandre Trotel" }],
+  creator: "Alexandre Trotel",
+  publisher: "Alexandre Trotel",
+  themeColor: "#000000",
+  manifest: "/manifest.json",
+  twitter: {
+    card: "summary",
+    title: "Progressly",
+    description: "A progress tracker for your goals",
+    creator: "@trotelalexandre",
+  },
+  openGraph: {
+    type: "website",
+    title: "Progressly",
+    description: "A progress tracker for your goals",
+    siteName: "Progressly",
+  },
 };
 
 const inter = Inter({
