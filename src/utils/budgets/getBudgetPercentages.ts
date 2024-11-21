@@ -12,7 +12,7 @@ export const getBudgetPercentages = (
   const validTotalIncome = Math.max(totalIncome, 0);
   const validTotalExpense = Math.max(totalExpense, 0);
 
-  const remainingBudget = totalIncome - totalExpense;
+  const remainingBudget = validTotalIncome - validTotalExpense;
 
   const remainingBudgetPercentage =
     remainingBudget <= 0

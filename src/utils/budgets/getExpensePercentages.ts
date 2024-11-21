@@ -11,7 +11,7 @@ export const getExpensePercentages = (
   expensesByType: ExpensesByType,
   totalExpense: number
 ) => {
-  if (!totalExpense) {
+  if (!totalExpense || totalExpense <= 0) {
     return {
       essentialPercentage: 0,
       lifestylePercentage: 0,
@@ -19,14 +19,17 @@ export const getExpensePercentages = (
     };
   }
 
-  const essentialPercentage = Math.floor(
-    (expensesByType["essential"] / totalExpense) * 100
+  const essentialPercentage = Math.max(
+    0,
+    Math.floor((expensesByType["essential"] / totalExpense) * 100)
   );
-  const lifestylePercentage = Math.floor(
-    (expensesByType["lifestyle"] / totalExpense) * 100
+  const lifestylePercentage = Math.max(
+    0,
+    Math.floor((expensesByType["lifestyle"] / totalExpense) * 100)
   );
-  const investmentPercentage = Math.floor(
-    (expensesByType["investment"] / totalExpense) * 100
+  const investmentPercentage = Math.max(
+    0,
+    Math.floor((expensesByType["investment"] / totalExpense) * 100)
   );
 
   return { essentialPercentage, lifestylePercentage, investmentPercentage };

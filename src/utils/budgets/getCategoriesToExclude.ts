@@ -7,6 +7,10 @@ import { CategoriesByType } from "@/types/budget";
  * @returns The categories without income and investment categories.
  */
 export const getCategoriesToExclude = (categoriesByType: CategoriesByType) => {
+  if (!categoriesByType["income"] && !categoriesByType["investment"]) {
+    return [];
+  }
+
   const categoriesToExclude = categoriesByType["income"]
     .concat(categoriesByType["investment"])
     .map((category) => category.name);
