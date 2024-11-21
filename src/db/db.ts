@@ -16,6 +16,7 @@ export const client = postgres(connectionString, {
   prepare: false,
 });
 export const db = drizzle(client, {
+  logger: process.env.NODE_ENV === "development",
   schema: {
     ...budgetsSchema,
     ...currencySchema,

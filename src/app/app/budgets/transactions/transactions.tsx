@@ -5,23 +5,28 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-
-import { fetchThisMonthTransactions } from "@/utils/db/budgets/thisMonthTransactions";
-import { DataTable } from "@/components/ui/data-table";
-import { getTransactionColumns } from "./transaction-columns";
 import { Categories } from "@/types/budget";
 import TransactionsTable from "./transactions-table";
+import { fetchMonthlyTransactions } from "@/utils/db/budgets/monthlyTransactions";
 
 interface TransactionsProps {
   userId: string;
   categories: Categories;
+  activeMonth: number;
+  activeYear: number;
 }
 
 export default async function Transactions({
   userId,
   categories,
+  activeMonth,
+  activeYear,
 }: TransactionsProps) {
-  const transactions = await fetchThisMonthTransactions.execute({ userId });
+  const transactions = await fetchMonthlyTransactions.execute({
+    userId,
+    activeMonth,
+    activeYear,
+  });
 
   if (!transactions || !transactions.length) {
     return (
