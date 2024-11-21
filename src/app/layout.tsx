@@ -24,7 +24,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Alexandre Trotel" }],
   creator: "Alexandre Trotel",
   publisher: "Alexandre Trotel",
-  themeColor: "#000000",
   manifest: "/manifest.json",
   twitter: {
     card: "summary",

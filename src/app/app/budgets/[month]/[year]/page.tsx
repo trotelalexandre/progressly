@@ -44,8 +44,6 @@ export default async function BudgetsPageContent({
     ? new Date().getFullYear()
     : parseInt(year, 10);
 
-  console.log("activeMonth", activeMonth);
-
   const categories = await fetchCategories.execute();
   const transactions = await fetchMonthlyTransactions.execute({
     userId,
