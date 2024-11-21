@@ -14,17 +14,17 @@ import { getTotalIncomeAndExpense } from "@/utils/budgets/getTotalIncomeAndExpen
 import { getExpensePercentages } from "@/utils/budgets/getExpensePercentages";
 import { MonthYearPicker } from "../../month-year-picker";
 import { fetchMonthlyTransactions } from "@/utils/db/budgets/monthlyTransactions";
+import { MonthYearParams } from "@/types/params";
 
 interface BudgetsPageContentProps {
-  params: {
-    month: string;
-    year: string;
-  };
+  params: Promise<MonthYearParams>;
 }
 
 export default async function BudgetsPageContent({
   params,
 }: BudgetsPageContentProps) {
+  const { month, year } = await params;
+
   const supabase = await createClient();
 
   const {
@@ -37,12 +37,12 @@ export default async function BudgetsPageContent({
 
   const userId = user.id;
 
-  const activeMonth = isNaN(parseInt(params.month, 10))
+  const activeMonth = isNaN(parseInt(month, 10))
     ? new Date().getMonth() + 1
-    : parseInt(params.month, 10);
-  const activeYear = isNaN(parseInt(params.year, 10))
+    : parseInt(month, 10);
+  const activeYear = isNaN(parseInt(year, 10))
     ? new Date().getFullYear()
-    : parseInt(params.year, 10);
+    : parseInt(year, 10);
 
   console.log("activeMonth", activeMonth);
 

@@ -1,16 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-interface BudgetsPageContentProps {
-  params: {
-    month: string;
-    year: string;
-  };
-}
-
-export default async function BudgetsPageContent({
-  params,
-}: BudgetsPageContentProps) {
+export default async function BudgetsPageContent() {
   const supabase = await createClient();
 
   const {
@@ -20,8 +11,6 @@ export default async function BudgetsPageContent({
   if (!user) {
     redirect("/auth/sign-in");
   }
-
-  const userId = user.id;
 
   const activeMonth = new Date().getMonth() + 1;
   const activeYear = new Date().getFullYear();
