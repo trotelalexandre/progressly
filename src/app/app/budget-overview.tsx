@@ -23,8 +23,7 @@ export default async function BudgetOverview({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
-          {totalExpense.toFixed(0)} {currency} / {totalIncome.toFixed(0)}{" "}
-          {currency}
+          {totalExpense.toFixed(0)} {currency} spent
         </div>
         <p className="text-xs text-muted-foreground">
           {usedBudgetPercentage}% of monthly budget used
