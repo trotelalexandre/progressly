@@ -19,11 +19,13 @@ export const getSpentChart = (
     categoriesByType
   );
 
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const today = new Date();
+
   const allDates = eachDayOfInterval({
-    start: new Date(
-      Math.min(...expenseTransactions.map((t) => new Date(t.date).getTime()))
-    ),
-    end: new Date(),
+    start: oneWeekAgo,
+    end: today,
   });
 
   const transactionsPerDay = lodash.groupBy(

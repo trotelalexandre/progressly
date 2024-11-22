@@ -1,7 +1,7 @@
 "use client";
 import "client-only";
 
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
@@ -62,32 +62,26 @@ export default function SpentChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Spent Progress</CardTitle>
-        <CardDescription>Spending progress day by day</CardDescription>
+        <CardTitle>This Week's Spending</CardTitle>
+        <CardDescription>Spending overview for the last week</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="mx-auto max-h-[350px]">
-          <LineChart accessibilityLayer data={chartData}>
+          <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="day"
+              dataKey="month"
               tickLine={false}
+              tickMargin={10}
               axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(8)}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Line
-              dataKey="spent"
-              type="natural"
-              stroke="var(--color-spent)"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
+            <Bar dataKey="spent" fill="var(--color-spent)" radius={8} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
