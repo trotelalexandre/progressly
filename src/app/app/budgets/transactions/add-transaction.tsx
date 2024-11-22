@@ -60,8 +60,11 @@ export default function AddTransaction({
   const form = useForm<z.infer<typeof AddTranssactionFormSchema>>({
     resolver: zodResolver(AddTranssactionFormSchema),
     defaultValues: {
+      amount: undefined,
       currency: "EUR",
       date: new Date(),
+      category: "",
+      note: "",
     },
   });
 
@@ -187,7 +190,10 @@ export default function AddTransaction({
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value ?? undefined}
+                  >
                     <FormControl>
                       <SelectTrigger className="gap-4 w-fit">
                         <SelectValue placeholder="Choose a category" />
@@ -223,7 +229,12 @@ export default function AddTransaction({
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormControl>
-                    <Textarea {...field} placeholder="Note" />
+                    <Textarea
+                      {...field}
+                      placeholder="Note"
+                      value={field.value ?? undefined}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
