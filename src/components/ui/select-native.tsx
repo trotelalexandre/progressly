@@ -5,10 +5,11 @@ import * as React from "react";
 export interface SelectPropsNative
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
   children: React.ReactNode;
+  placeholder?: string;
 }
 
 const SelectNative = React.forwardRef<HTMLSelectElement, SelectPropsNative>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, placeholder, ...props }, ref) => {
     return (
       <div className="relative">
         <select
@@ -22,6 +23,11 @@ const SelectNative = React.forwardRef<HTMLSelectElement, SelectPropsNative>(
           ref={ref}
           {...props}
         >
+          {placeholder && (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          )}
           {children}
         </select>
         {!props.multiple && (

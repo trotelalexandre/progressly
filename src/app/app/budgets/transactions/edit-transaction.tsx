@@ -220,6 +220,7 @@ export default function EditTransaction({
                     onChange={field.onChange}
                     value={field.value}
                     className="w-fit"
+                    placeholder="Choose a category"
                   >
                     {Object.entries(categoriesByType).map(
                       ([type, categories]) => (

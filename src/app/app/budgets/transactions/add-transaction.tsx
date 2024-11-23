@@ -182,6 +182,7 @@ export default function AddTransaction({
                   <SelectNative
                     onChange={field.onChange}
                     value={field.value ?? undefined}
+                    placeholder="Choose a category"
                   >
                     {Object.entries(categoriesByType).map(
                       ([type, categories]) => (
