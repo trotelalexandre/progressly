@@ -62,7 +62,7 @@ export default function SpentChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>This Week's Spending</CardTitle>
+        <CardTitle>This Week&apos;s Spending</CardTitle>
         <CardDescription>Spending overview for the last week</CardDescription>
       </CardHeader>
       <CardContent>

@@ -12,12 +12,11 @@ import {
   CardContent,
 } from "../ui/card";
 import { Input } from "../ui/input";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { signInWithGoogle } from "../../../actions/auth.action";
 import { features } from "../../data/features";
-import { useFormStatus } from "react-dom";
-import { FaGoogle } from "react-icons/fa";
-import { Loader2 } from "lucide-react";
+import { RiGithubFill, RiGoogleFill } from "@remixicon/react";
+import GoogleButton from "./google-button";
+import GithubButton from "./github-button";
 
 export default function AuthForm({ signup }: { signup?: boolean }) {
   return (
@@ -68,10 +67,7 @@ export default function AuthForm({ signup }: { signup?: boolean }) {
 
           {features.canSignInWithGithub && (
             <form>
-              <Button variant="outline" className="w-full" type="submit">
-                {signup ? "Sign up" : "Login"} with Github{" "}
-                <GitHubLogoIcon className="w-6 h-6" />
-              </Button>
+              <GithubButton signup={signup} />
             </form>
           )}
 
@@ -95,25 +91,5 @@ export default function AuthForm({ signup }: { signup?: boolean }) {
         )}
       </CardContent>
     </Card>
-  );
-}
-
-function GoogleButton({ signup }: { signup?: boolean }) {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button
-      variant="outline"
-      className="w-full"
-      type="submit"
-      disabled={pending}
-    >
-      {pending ? (
-        <Loader2 className="animate-spin" />
-      ) : (
-        `${signup ? "Sign up" : "Login"} with Google`
-      )}
-      {!pending && <FaGoogle className="w-6 h-6" />}
-    </Button>
   );
 }
