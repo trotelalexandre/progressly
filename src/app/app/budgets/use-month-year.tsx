@@ -27,12 +27,16 @@ export const useMonthYear = () => {
     router.push(`/app/budgets/${newMonth}/${newYear}`);
   };
 
-  const handleMonthChange = (value: string) => {
+  const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+
     const newMonth = parseInt(value, 10);
     navigateToNewDate(newMonth, activeYear);
   };
 
-  const handleYearChange = (value: string) => {
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+
     const newYear = parseInt(value, 10);
     navigateToNewDate(activeMonth, newYear);
   };

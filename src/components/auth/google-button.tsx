@@ -15,7 +15,6 @@ export default function GoogleButton({ signup }: GoogleButtonProps) {
       type="submit"
       variant="outline"
       className="w-full"
-      loading={pending}
       disabled={pending}
     >
       {!pending && (

@@ -15,7 +15,6 @@ export default function GithubButton({ signup }: GithubButtonProps) {
       type="submit"
       variant="outline"
       className="w-full"
-      loading={pending}
       disabled={pending}
     >
       {!pending && (
