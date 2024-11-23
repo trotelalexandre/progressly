@@ -8,15 +8,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
+import { SelectNative } from "@/components/ui/select-native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
@@ -108,18 +100,15 @@ export default function AddTransaction({
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
-                  <FormItem>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="gap-4 w-fit">
-                          <SelectValue placeholder="Currency" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <FormItem className="w-fit">
+                    <SelectNative
+                      onChange={field.onChange}
+                      value={field.value}
+                      className="w-fit"
+                    >
+                      <option value="EUR">EUR</option>
+                      <option value="USD">USD</option>
+                    </SelectNative>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -190,35 +179,25 @@ export default function AddTransaction({
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
+                  <SelectNative
+                    onChange={field.onChange}
                     value={field.value ?? undefined}
                   >
-                    <FormControl>
-                      <SelectTrigger className="gap-4 w-fit">
-                        <SelectValue placeholder="Choose a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.entries(categoriesByType).map(
-                        ([type, categories]) => (
-                          <SelectGroup key={type}>
-                            <SelectLabel>
-                              {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </SelectLabel>
-                            {categories?.map((category) => (
-                              <SelectItem
-                                key={category.name}
-                                value={category.name}
-                              >
-                                {category.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
+                    {Object.entries(categoriesByType).map(
+                      ([type, categories]) => (
+                        <optgroup
+                          key={type}
+                          label={type.charAt(0).toUpperCase() + type.slice(1)}
+                        >
+                          {categories?.map((category) => (
+                            <option key={category.name} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )
+                    )}
+                  </SelectNative>
                   <FormMessage />
                 </FormItem>
               )}

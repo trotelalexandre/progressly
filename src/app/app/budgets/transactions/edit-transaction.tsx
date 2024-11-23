@@ -45,6 +45,7 @@ import { getCategoriesByType } from "@/utils/budgets/getCategoriesByType";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { editTransaction } from "../../../../../actions/budget.action";
+import { SelectNative } from "@/components/ui/select-native";
 
 interface EditTransactionProps {
   transaction: Transaction | null;
@@ -136,18 +137,15 @@ export default function EditTransaction({
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
-                  <FormItem>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="gap-4 w-fit">
-                          <SelectValue placeholder="Currency" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="EUR">EUR</SelectItem>
-                        <SelectItem value="USD">USD</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <FormItem className="w-fit">
+                    <SelectNative
+                      onChange={field.onChange}
+                      value={field.value}
+                      className="w-fit"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                    </SelectNative>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -217,33 +215,27 @@ export default function EditTransaction({
               control={form.control}
               name="category"
               render={({ field }) => (
-                <FormItem>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="gap-4 w-fit">
-                        <SelectValue placeholder="Choose a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.entries(categoriesByType).map(
-                        ([type, categories]) => (
-                          <SelectGroup key={type}>
-                            <SelectLabel>
-                              {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </SelectLabel>
-                            {categories?.map((category) => (
-                              <SelectItem
-                                key={category.name}
-                                value={category.name}
-                              >
-                                {category.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
+                <FormItem className="w-fit">
+                  <SelectNative
+                    onChange={field.onChange}
+                    value={field.value}
+                    className="w-fit"
+                  >
+                    {Object.entries(categoriesByType).map(
+                      ([type, categories]) => (
+                        <optgroup
+                          key={type}
+                          label={type.charAt(0).toUpperCase() + type.slice(1)}
+                        >
+                          {categories?.map((category) => (
+                            <option key={category.name} value={category.name}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      )
+                    )}
+                  </SelectNative>
                   <FormMessage />
                 </FormItem>
               )}
