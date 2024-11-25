@@ -21,6 +21,7 @@ import { getSpentChart } from "@/utils/budgets/charts/getSpentChart";
 import { getUniqueTransactionsDaysCount } from "@/utils/budgets/getUniqueTransactionsDaysCount";
 import { Dictionary } from "lodash";
 import { Categories, Transactions } from "@/types/budget";
+import { format } from "date-fns";
 
 const chartConfig = {
   spent: {
@@ -70,11 +71,11 @@ export default function SpentChart({
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="day"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => format(new Date(value), "EEEE")}
             />
             <ChartTooltip
               cursor={false}
