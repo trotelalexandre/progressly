@@ -15,8 +15,11 @@ export const useMonthYear = () => {
 
   useEffect(() => {
     if (params.month && params.year) {
-      setActiveMonth(parseInt(params.month, 10));
-      setActiveYear(parseInt(params.year, 10));
+      const activeMonth = parseInt(params.month, 10) - 1;
+      const activeYear = parseInt(params.year, 10);
+
+      setActiveMonth(activeMonth);
+      setActiveYear(activeYear);
     }
   }, [params]);
 
@@ -30,7 +33,7 @@ export const useMonthYear = () => {
   const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
 
-    const newMonth = parseInt(value, 10);
+    const newMonth = parseInt(value, 10) + 1;
     navigateToNewDate(newMonth, activeYear);
   };
 
